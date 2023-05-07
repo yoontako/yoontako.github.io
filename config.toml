@@ -1,0 +1,12 @@
+hasCJKLanguage = true
+baseURL = 'https://yurust.com/'
+languageCode = 'ja-JP'
+title = 'ゆるゆるテック'
+theme = "hugo_theme_robust"
+publishDir = "public"
+canonifyurls = true
+
+[params]
+googlefonts = "https://fonts.googleapis.com/css?family=Lobster|Lato:400,700"
+fontfamily = "Lato,YuGothic,'Hiragino Kaku Gothic Pro',Meiryo,sans-serif"
+logofontfamily = "Lobster, cursive"
