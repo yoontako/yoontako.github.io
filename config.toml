@@ -7,6 +7,7 @@ publishDir = "public"
 canonifyurls = true
 
 [params]
+description = "テクノロジーネタを何となく、ゆる〜くかんたんに解説!"
 googlefonts = "https://fonts.googleapis.com/css?family=Lobster|Lato:400,700"
 fontfamily = "Lato,YuGothic,'Hiragino Kaku Gothic Pro',Meiryo,sans-serif"
 logofontfamily = "Lobster, cursive"
