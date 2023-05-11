@@ -17,8 +17,9 @@ tags: ["Mac"]
 
 そして唯一見つけたのがこの Reddit の投稿でした。
 
-[Sleep wake failure in EFI - Reddit](https://www.reddit.com/r/MacOS/comments/dme38s/sleep_wake_failure_in_efi/)
-[Error after having hard drive replaced. - Apple Community](https://discussions.apple.com/thread/250469185)
+[Sleep wake failure in EFI](https://www.reddit.com/r/MacOS/comments/dme38s/sleep_wake_failure_in_efi/)
+
+[Error after having hard drive replaced.](https://discussions.apple.com/thread/250469185)
 
 Reddit の投稿に貼られた Apple Community のリンクを見ると、
 
