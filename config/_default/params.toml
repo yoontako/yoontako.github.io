@@ -5,16 +5,15 @@ rssFullContent = true
 favicon = "/favicon.png"
 
 [footer]
-since = 2020
+since = 2024
 customText = ""
 
 [dateFormat]
-published = "Jan 02, 2006"
-lastUpdated = "Jan 02, 2006 15:04 MST"
+published = "2006/01/02"
+lastUpdated = "2006/01/02 15:04 JST"
 
 [sidebar]
-emoji = "🍥"
-subtitle = "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+subtitle = "なんでも適当に書いてます"
 
 [sidebar.avatar]
 enabled = true
