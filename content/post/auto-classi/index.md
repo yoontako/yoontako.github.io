@@ -2,7 +2,8 @@
 title: "Classi学習時間記録の自動化"
 description: 
 date: 2024-06-02T21:43:22+09:00
-draft: true
+draft: false
+slug: auto-classi
 ---
 
 私の通っている学校は[Classi](https://ja.wikipedia.org/wiki/Classi)の学習時間記録の入力を毎日強要してきます。

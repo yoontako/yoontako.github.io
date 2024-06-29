@@ -8,3 +8,23 @@
     --base-font-family: "Lato", var(--sys-font-family), var(--ja-font-family), sans-serif;
     --code-font-family: Menlo, Monaco, Consolas, "Courier New", var(--ja-font-family), monospace;
   }
+
+
+
+
+  .single {
+    &__caution {
+      display: flex;
+      border-radius: 6px;
+      font-size: 1.40rem;
+      font-weight: bold;
+      background-color: #ffb0b0;
+      padding: 6px;
+      margin: 12px;
+    }
+    &__caution span {
+      color: #ffb0b0;
+      margin-right: 4px;
+    }
+  }
+  

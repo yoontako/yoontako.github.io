@@ -1,0 +1,34 @@
+<div class="single__caution">
+    <p></p>
+  </div>
+  
+  <script>
+    const agoYear = (singleDate) => {
+      let year = 0;
+      for(let i = 0; i < 10; ++i) {
+        const iYearAgo = new Date; // 一旦「今日」を取得する
+        iYearAgo.setFullYear(iYearAgo.getFullYear() - i); // i年前
+        if (iYearAgo > singleDate) {
+          year = i;
+        } else {
+          break;
+        }
+      }
+      return year;
+    }
+  
+    const replaceCautionText = (targetYear) => {
+      const singleDate = Date.parse({{ .Date }});
+      const singleDateAgo = agoYear(singleDate);
+      const caution = document.querySelector('.single__caution');
+  
+      if (singleDateAgo >= targetYear) {
+        const p = caution.lastElementChild;
+        p.innerHTML = `⚠️ この記事は${singleDateAgo}年以上前に更新されました。内容が古くなっている可能性があります。`;
+      } else {
+        caution.classList.replace("single__caution", "hide");
+      }
+    }
+    replaceCautionText(1) // 1年前
+  </script>
+  

@@ -2,7 +2,7 @@
 mainSections = ["post"]
 # Output page's full content in RSS.
 rssFullContent = true
-favicon = "/favicon.png"
+favicon = "/favicon.ico"
 
 [footer]
 since = 2024
@@ -18,7 +18,7 @@ subtitle = "なんでも適当に書いてます"
 [sidebar.avatar]
 enabled = true
 local = true
-src = "img/avatar.png"
+src = "img/avatar.jpg"
 
 [article]
 headingAnchor = false
