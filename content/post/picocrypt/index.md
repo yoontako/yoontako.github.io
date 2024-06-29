@@ -1,7 +1,8 @@
 ---
-title: "Picocryptの使い方"
+title: "Picocryptでファイル暗号化"
 date: 2023-03-16T18:36:55+09:00
 draft: false
+slug: how-to-use-picocrypt
 ---
 
 秘密の写真やキーファイルなど、細かいファイル単位の「他人に見られたくないファイルをパスワードで暗号化して保存したい」みたいなことがあると思います。
