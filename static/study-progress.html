@@ -41,6 +41,7 @@
             transition: var(--transition);
         }
         .sidebar h1 {
+            color: #eee;
             margin-bottom: 30px;
             font-size: 1.5em;
             text-align: center;
@@ -255,7 +256,7 @@
 </head>
 <body>
     <div class="sidebar">
-        <h1>参考書進捗管理アプリ</h1>
+        <h1>Visual Progress</h1>
         <ul class="sidebar-nav">
             <li>
                 <a href="#" onclick="showDashboard()">
@@ -344,6 +345,8 @@
                 <input type="file" id="importData" accept=".json">
             </div>
             <button onclick="importData()">インポート</button>
+            <br>
+            <a href="https://takker.cc/p/study-progress-dev-1/">最新情報はブログに掲載されています</a>
         </div>
 
         <div id="chartSection" class="card" style="display:none;">
