@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #4a4de7;
+            --primary-color: #1D83F5;
             --secondary-color: #6c757d;
             --background-color: #f8f9fa;
             --text-color: #333;
@@ -307,18 +307,19 @@
             </li>
         </ul>
     </div>
-
+ 
     <div class="main-content">
         <div id="dashboard" class="card">
             <h2>ダッシュボード</h2>
             <div id="dashboardCharts"></div>
         </div>
-
+ 
         <div id="bookListSection" style="display:none;">
             <h2>登録された教材</h2>
             <div id="bookList"></div>
         </div>
-
+ 
+ 
         <div id="progressRecordSection" class="card" style="display:none;">
             <h2>進捗記録</h2>
             <div class="input-group">
@@ -330,13 +331,13 @@
                 <input type="date" id="currentDate" required>
             </div>
             <div class="input-group">
-                <label for="currentPage">現在のページ:</label>
-                <input type="number" id="currentPage" min="0" required>
+                <label for="pagesRead">今日進んだページ数:</label>
+                <input type="number" id="pagesRead" min="0" required>
             </div>
             <button onclick="recordProgress()">進捗を記録</button>
             <div id="progressList"></div>
         </div>
-
+ 
         <div id="dataManagementSection" class="card" style="display:none;">
             <h2>データ管理</h2>
             <button onclick="exportData()">データをエクスポート</button>
@@ -348,12 +349,12 @@
             <br>
             <a href="https://takker.cc/p/study-progress-dev-1/">最新情報はブログに掲載されています</a>
         </div>
-
+ 
         <div id="chartSection" class="card" style="display:none;">
             <canvas id="lineChart"></canvas>
         </div>
     </div>
-
+ 
     <div id="addBookModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -377,7 +378,7 @@
             <button onclick="addBook()">教材を追加</button>
         </div>
     </div>
-
+ 
     <div id="editBookModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeEditBookModal()">&times;</span>
@@ -402,13 +403,13 @@
             <button onclick="updateBook()">教材を更新</button>
         </div>
     </div>
-
+ 
     <script>
         let books = [];
         let charts = {};
-
+ 
         document.addEventListener('DOMContentLoaded', loadData);
-
+ 
         // localStorage関連
         function loadData() {
             const savedBooks = localStorage.getItem('books');
@@ -424,21 +425,21 @@
                 updateDashboard();
             }
         }
-
+ 
         function saveData() {
             localStorage.setItem('books', JSON.stringify(books));
         }
-
+ 
         // モーダル関連の要素
         var addBookModal = document.getElementById("addBookModal");
         var editBookModal = document.getElementById("editBookModal");
         var span = document.getElementsByClassName("close")[0];
-
+ 
         // モーダルを閉じる
         span.onclick = function() {
             addBookModal.style.display = "none";
         }
-
+ 
         // モーダル外をクリックしたらモーダルを閉じる
         window.onclick = function(event) {
             if (event.target == addBookModal) {
@@ -448,7 +449,7 @@
                 editBookModal.style.display = "none";
             }
         }
-
+ 
         function showDashboard() {
             document.getElementById('dashboard').style.display = 'block';
             document.getElementById('bookListSection').style.display = 'none';
@@ -457,11 +458,11 @@
             document.getElementById('dataManagementSection').style.display = 'none';
             updateDashboard();
         }
-
+ 
         function showAddBook() {
             addBookModal.style.display = "block";
         }
-
+ 
         function showBookList() {
             document.getElementById('dashboard').style.display = 'none';
             document.getElementById('bookListSection').style.display = 'block';
@@ -470,7 +471,7 @@
             document.getElementById('dataManagementSection').style.display = 'none';
             updateBookList();
         }
-
+ 
         function showProgressRecord() {
             document.getElementById('dashboard').style.display = 'none';
             document.getElementById('bookListSection').style.display = 'none';
@@ -480,7 +481,7 @@
             updateBookSelect();
             setDefaultDate();
         }
-
+ 
         function showDataManagement() {
             document.getElementById('dashboard').style.display = 'none';
             document.getElementById('bookListSection').style.display = 'none';
@@ -488,19 +489,19 @@
             document.getElementById('chartSection').style.display = 'none';
             document.getElementById('dataManagementSection').style.display = 'block';
         }
-
+ 
         function addBook() {
             const title = document.getElementById('bookTitle').value;
             const totalPages = parseInt(document.getElementById('totalPages').value);
             const startDate = new Date(document.getElementById('startDate').value);
             startDate.setDate(startDate.getDate() - 1);
             const endDate = new Date(document.getElementById('endDate').value);
-
+ 
             if (!title || isNaN(totalPages) || !startDate || !endDate) {
                 alert('すべての項目を正しく入力してください。');
                 return;
             }
-
+ 
             const book = {
                 id: Date.now(),
                 title,
@@ -509,14 +510,14 @@
                 endDate,
                 progress: []
             };
-
+ 
             books.push(book);
-
+ 
+            // 初期進捗を0ページとして追加
             const progressId = Date.now();
-            book.progress.push({id: progressId, date: startDate, page: 0});
+            book.progress.push({id: progressId, date: startDate, pages: 0});
             book.progress.sort((a, b) => a.date - b.date);
-            
-            
+ 
             saveData();
             updateBookList();
             updateBookSelect();
@@ -528,7 +529,7 @@
             document.getElementById('startDate').value = '';
             document.getElementById('endDate').value = '';
         }
-
+ 
         function updateBookList() {
             const bookList = document.getElementById('bookList');
             bookList.innerHTML = '';
@@ -546,7 +547,7 @@
                 `;
             });
         }
-
+ 
         function updateBookSelect() {
             const select = document.getElementById('selectBook');
             select.innerHTML = '';
@@ -568,129 +569,212 @@
                 updateChart(selectedBook);
             });
         }
-        
-
+ 
+ 
         function recordProgress() {
             const bookId = document.getElementById('selectBook').value;
             const currentDate = new Date(document.getElementById('currentDate').value);
-            const currentPage = parseInt(document.getElementById('currentPage').value);
-
-            if (isNaN(currentPage) || !currentDate) {
+            const pagesRead = parseInt(document.getElementById('pagesRead').value);
+ 
+            if (isNaN(pagesRead) || !currentDate) {
                 alert('すべての項目を正しく入力してください。');
                 return;
             }
-
+ 
             const book = books.find(b => b.id == bookId);
             const progressId = Date.now();
-            book.progress.push({id: progressId, date: currentDate, page: currentPage});
+            book.progress.push({id: progressId, date: currentDate, pages: pagesRead});
             book.progress.sort((a, b) => a.date - b.date);
-
+ 
             saveData();
             updateProgressList(bookId);
             updateChart(book);
             updateDashboard();
         }
-
+ 
         function updateProgressList(bookId) {
             const book = books.find(b => b.id == bookId);
             const progressList = document.getElementById('progressList');
             progressList.innerHTML = '';
+            let cumulativePages = 0;
             book.progress.forEach((progress) => {
-                progressList.innerHTML += `
-                    <div class="progress-item">
-                        <p>日付: ${progress.date.toLocaleDateString()}</p>
-                        <p>ページ: ${progress.page}</p>
-                        <div class="action-buttons">
-                            <button onclick="editProgress(${book.id}, ${progress.id})">編集</button>
-                            <button onclick="deleteProgress(${book.id}, ${progress.id})">削除</button>
+                if (!isNaN(progress.pages)) {
+                    cumulativePages += progress.pages;
+                    progressList.innerHTML += `
+                        <div class="progress-item">
+                            <p>日付: ${progress.date.toLocaleDateString()}</p>
+                            <p>進んだページ数: ${progress.pages}</p>
+                            <p>累積ページ数: ${cumulativePages}</p>
+                            <div class="action-buttons">
+                                <button onclick="editProgress(${book.id}, ${progress.id})">編集</button>
+                                <button onclick="deleteProgress(${book.id}, ${progress.id})">削除</button>
+                            </div>
                         </div>
-                    </div>
-                `;
-            });
-        }
-
-        function updateChart(book) {
-            const ctx = document.getElementById('lineChart').getContext('2d');
-            
-            if (charts[book.id]) {
-                charts[book.id].destroy();
-            }
-
-            const idealProgress = calculateIdealProgress(book);
-
-            charts[book.id] = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    datasets: [
-                        {
-                            label: '実際の残りページ数',
-                            data: book.progress.map(p => ({x: p.date, y: book.totalPages - p.page})),
-                            borderColor: 'rgb(75, 192, 192)',
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            tension: 0.1,
-                            fill: true
-                        },
-                        {
-                            label: '理想的な残りページ数',
-                            data: idealProgress,
-                            borderColor: 'rgb(255, 99, 132)',
-                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                            tension: 0.1,
-                            fill: true
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: `${book.title}の進捗状況`,
-                            font: {
-                                size: 18
-                            }
-                        },
-                        legend: {
-                            position: 'bottom'
-                        }
-                    },
-                    scales: {
-                        x: {
-                            type: 'time',
-                            time: {
-                                unit: 'day'
-                            },
-                            title: {
-                                display: true,
-                                text: '日付'
-                            }
-                        },
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: '残りページ数'
-                            }
-                        }
-                    }
+                    `;
                 }
             });
         }
-
+ 
+        function updateChart(book) {
+    const ctx = document.getElementById('lineChart').getContext('2d');
+ 
+    if (charts[book.id]) {
+        charts[book.id].destroy();
+    }
+ 
+    const idealProgress = calculateIdealProgress(book);
+    const sortedProgress = book.progress.sort((a, b) => a.date - b.date);
+    const today = new Date();
+    const dateRange = [];
+    for (let d = new Date(book.startDate); d <= today; d.setDate(d.getDate() + 1)) {
+        dateRange.push(new Date(d));
+    }
+ 
+    let cumulativePages = 0;
+    const actualProgress = dateRange.map(date => {
+        const progressOnDate = sortedProgress.find(p => p.date.toDateString() === date.toDateString());
+        if (progressOnDate && !isNaN(progressOnDate.pages)) {
+            cumulativePages += progressOnDate.pages;
+        }
+        return { x: date, y: Math.max(0, book.totalPages - cumulativePages) };
+    });
+ 
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(54, 162, 235, 0.8)');
+    gradient.addColorStop(1, 'rgba(54, 162, 235, 0)');
+ 
+    charts[book.id] = new Chart(ctx, {
+        type: 'line',
+        data: {
+            datasets: [
+                {
+                    label: '実際の残りページ数',
+                    data: actualProgress,
+                    borderColor: 'rgb(54, 162, 235)',
+                    backgroundColor: gradient,
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 0,
+                    pointHoverRadius: 6,
+                    pointHoverBackgroundColor: 'rgb(54, 162, 235)',
+                    pointHoverBorderColor: 'white',
+                    pointHoverBorderWidth: 2
+                },
+                {
+                    label: '理想的な残りページ数',
+                    data: idealProgress,
+                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 0,
+                    pointHoverRadius: 6,
+                    pointHoverBackgroundColor: 'rgb(255, 99, 132)',
+                    pointHoverBorderColor: 'white',
+                    pointHoverBorderWidth: 2
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: `${book.title}の進捗状況`,
+                    font: {
+                        size: 18,
+                        weight: 'bold'
+                    },
+                    padding: {
+                        top: 10,
+                        bottom: 30
+                    }
+                },
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 20
+                    }
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                    titleFont: {
+                        size: 14
+                    },
+                    bodyFont: {
+                        size: 12
+                    },
+                    padding: 12,
+                    cornerRadius: 6
+                }
+            },
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        unit: 'day',
+                        displayFormats: {
+                            day: 'MM/dd'
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: '日付',
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        }
+                    },
+                    grid: {
+                        display: false
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: '残りページ数',
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.1)'
+                    }
+                }
+            },
+            animation: {
+                duration: 1500,
+                easing: 'easeOutQuart'
+            },
+            interaction: {
+                mode: 'nearest',
+                axis: 'x',
+                intersect: false
+            }
+        }
+    });
+}
+ 
+ 
         function calculateIdealProgress(book) {
             const totalDays = (book.endDate - book.startDate) / (1000 * 60 * 60 * 24);
             const dailyPages = book.totalPages / totalDays;
             let idealProgress = [];
-
+ 
             for (let i = 0; i <= totalDays; i++) {
                 const date = new Date(book.startDate.getTime() + i * 24 * 60 * 60 * 1000);
                 const remainingPages = Math.max(0, book.totalPages - dailyPages * i);
                 idealProgress.push({x: date, y: remainingPages});
             }
-
+ 
             return idealProgress;
         }
-
+ 
         function editBook(bookId) {
             const book = books.find(b => b.id == bookId);
             document.getElementById('editBookId').value = book.id;
@@ -700,32 +784,32 @@
             document.getElementById('editEndDate').value = book.endDate.toISOString().split('T')[0];
             editBookModal.style.display = "block";
         }
-
+ 
         function updateBook() {
             const bookId = document.getElementById('editBookId').value;
             const title = document.getElementById('editBookTitle').value;
             const totalPages = parseInt(document.getElementById('editTotalPages').value);
             const startDate = new Date(document.getElementById('editStartDate').value);
             const endDate = new Date(document.getElementById('editEndDate').value);
-
+ 
             if (!title || isNaN(totalPages) || !startDate || !endDate) {
                 alert('すべての項目を正しく入力してください。');
                 return;
             }
-
+ 
             const book = books.find(b => b.id == bookId);
             book.title = title;
             book.totalPages = totalPages;
             book.startDate = startDate;
             book.endDate = endDate;
-
+ 
             saveData();
             updateBookList();
             updateBookSelect();
             updateDashboard();
             editBookModal.style.display = "none";
         }
-
+ 
         function deleteBook(bookId) {
             if (confirm('本当にこの教材を削除しますか？')) {
                 books = books.filter(b => b.id != bookId);
@@ -735,17 +819,20 @@
                 updateDashboard();
             }
         }
-
+ 
         function editProgress(bookId, progressId) {
             const book = books.find(b => b.id == bookId);
             const progress = book.progress.find(p => p.id == progressId);
-            
+ 
             const newDate = prompt('新しい日付を入力してください (YYYY-MM-DD):', progress.date.toISOString().split('T')[0]);
-            const newPage = prompt('新しいページ数を入力してください:', progress.page);
-
-            if (newDate && newPage) {
+            const newPages = prompt('新しい進んだページ数を入力してください:', progress.pages);
+ 
+            if (newDate && newPages) {
                 progress.date = new Date(newDate);
-                progress.page = parseInt(newPage);
+                progress.pages = parseInt(newPages);
+                if (isNaN(progress.pages)) {
+                    progress.pages = 0;
+                }
                 book.progress.sort((a, b) => a.date - b.date);
                 saveData();
                 updateProgressList(bookId);
@@ -753,7 +840,7 @@
                 updateDashboard();
             }
         }
-
+ 
         function deleteProgress(bookId, progressId) {
             if (confirm('本当にこの進捗記録を削除しますか？')) {
                 const book = books.find(b => b.id == bookId);
@@ -764,93 +851,173 @@
                 updateDashboard();
             }
         }
-
+ 
         function setDefaultDate() {
             const today = new Date();
             const formattedDate = today.toISOString().split('T')[0];
             document.getElementById('currentDate').value = formattedDate;
         }
-
+ 
         function closeEditBookModal() {
             editBookModal.style.display = "none";
         }
-
+ 
+ 
         function updateDashboard() {
-            const dashboardCharts = document.getElementById('dashboardCharts');
-            dashboardCharts.innerHTML = '';
-
-            books.forEach(book => {
-                const chartContainer = document.createElement('div');
-                chartContainer.className = 'dashboard-chart';
-                chartContainer.innerHTML = `<canvas id="chart-${book.id}"></canvas>`;
-                dashboardCharts.appendChild(chartContainer);
-
-                const ctx = document.getElementById(`chart-${book.id}`).getContext('2d');
-                const idealProgress = calculateIdealProgress(book);
-
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        datasets: [
-                            {
-                                label: '実際の残りページ数',
-                                data: book.progress.map(p => ({x: p.date, y: book.totalPages - p.page})),
-                                borderColor: 'rgb(75, 192, 192)',
-                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                                tension: 0.1,
-                                fill: true
-                            },
-                            {
-                                label: '理想的な残りページ数',
-                                data: idealProgress,
-                                borderColor: 'rgb(255, 99, 132)',
-                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                                tension: 0.1,
-                                fill: true
-                            }
-                        ]
+    const dashboardCharts = document.getElementById('dashboardCharts');
+    dashboardCharts.innerHTML = '';
+ 
+    books.forEach(book => {
+        const chartContainer = document.createElement('div');
+        chartContainer.className = 'dashboard-chart';
+        chartContainer.innerHTML = `<canvas id="chart-${book.id}"></canvas>`;
+        dashboardCharts.appendChild(chartContainer);
+ 
+        const ctx = document.getElementById(`chart-${book.id}`).getContext('2d');
+        const idealProgress = calculateIdealProgress(book);
+        const sortedProgress = book.progress.sort((a, b) => a.date - b.date);
+        const today = new Date();
+        const dateRange = [];
+        for (let d = new Date(book.startDate); d <= today; d.setDate(d.getDate() + 1)) {
+            dateRange.push(new Date(d));
+        }
+ 
+        let cumulativePages = 0;
+        const actualProgress = dateRange.map(date => {
+            const progressOnDate = sortedProgress.find(p => p.date.toDateString() === date.toDateString());
+            if (progressOnDate && !isNaN(progressOnDate.pages)) {
+                cumulativePages += progressOnDate.pages;
+            }
+            return { x: date, y: Math.max(0, book.totalPages - cumulativePages) };
+        });
+ 
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(54, 162, 235, 0.8)');
+        gradient.addColorStop(1, 'rgba(54, 162, 235, 0)');
+ 
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                datasets: [
+                    {
+                        label: '実際の残りページ数',
+                        data: actualProgress,
+                        borderColor: 'rgb(54, 162, 235)',
+                        backgroundColor: gradient,
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                        pointHoverBackgroundColor: 'rgb(54, 162, 235)',
+                        pointHoverBorderColor: 'white',
+                        pointHoverBorderWidth: 2
                     },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        aspectRatio: 1,
-                        plugins: {
-                            title: {
-                                display: true,
-                                text: book.title,
-                                font: {
-                                    size: 16
-                                }
-                            },
-                            legend: {
-                                position: 'bottom'
+                    {
+                        label: '理想的な残りページ数',
+                        data: idealProgress,
+                        borderColor: 'rgb(255, 99, 132)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                        pointHoverBackgroundColor: 'rgb(255, 99, 132)',
+                        pointHoverBorderColor: 'white',
+                        pointHoverBorderWidth: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                aspectRatio: 1,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: book.title,
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        },
+                        padding: {
+                            top: 10,
+                            bottom: 20
+                        }
+                    },
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 15
+                        }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                        titleFont: {
+                            size: 12
+                        },
+                        bodyFont: {
+                            size: 10
+                        },
+                        padding: 10,
+                        cornerRadius: 4
+                    }
+                },
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'day',
+                            displayFormats: {
+                                day: 'MM/dd'
                             }
                         },
-                        scales: {
-                            x: {
-                                type: 'time',
-                                time: {
-                                    unit: 'day'
-                                },
-                                title: {
-                                    display: true,
-                                    text: '日付'
-                                }
-                            },
-                            y: {
-                                beginAtZero: true,
-                                title: {
-                                    display: true,
-                                    text: '残りページ数'
-                                }
+                        title: {
+                            display: true,
+                            text: '日付',
+                            font: {
+                                size: 12,
+                                weight: 'bold'
                             }
+                        },
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '残りページ数',
+                            font: {
+                                size: 12,
+                                weight: 'bold'
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)'
                         }
                     }
-                });
-            });
-        }
-
-
+                },
+                animation: {
+                    duration: 1500,
+                    easing: 'easeOutQuart'
+                },
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'x',
+                    intersect: false
+                }
+            }
+        });
+    });
+}
+ 
+ 
+ 
+ 
         function exportData() {
             const data = JSON.stringify(books);
             const blob = new Blob([data], {type: 'application/json'});
@@ -863,7 +1030,7 @@
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
         }
-
+ 
         function importData() {
             const fileInput = document.getElementById('importData');
             const file = fileInput.files[0];
@@ -893,7 +1060,7 @@
                 alert('ファイルを選択してください。');
             }
         }
-
+ 
         // 初期表示時にダッシュボードを表示
         showDashboard();
     </script>
