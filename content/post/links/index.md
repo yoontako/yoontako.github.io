@@ -1,8 +1,7 @@
 ---
-title: "Links"
+title: "リンク集"
 description: 
 date: 2024-07-27T21:43:22+09:00
-draft: true
 slug: links
 ---
 
@@ -19,4 +18,5 @@ Eric Murphy氏が行なっていることを真似させていただきました
 - [Eric Murphy※](https://ericmurphy.xyz/)
 - [~bt※](https://btxx.org/)
 - [paritybit.ca※](https://www.paritybit.ca/blog/)
+    - 例: [タスク管理ツールは時間の無駄か](https://www.paritybit.ca/blog/are-todo-applications-a-waste-of-time/)
 - [ガジェマガ](https://2week.net)
