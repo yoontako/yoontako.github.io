@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on h-takker Blog</title><link>https://takker.cc/post/</link><description>Recent content in Posts on h-takker Blog</description><generator>Hugo -- gohugo.io</generator><language>ja</language><lastBuildDate>Fri, 02 Aug 2024 12:43:22 +0900</lastBuildDate><atom:link href="https://takker.cc/post/index.xml" rel="self" type="application/rss+xml"/><item><title>赤外線リモコンでエアコンの通信を一部解析したかった話</title><link>https://takker.cc/p/ir1/</link><pubDate>Fri, 02 Aug 2024 12:43:22 +0900</pubDate><guid>https://takker.cc/p/ir1/</guid><description>&lt;p>最近のエアコンはインターネットに接続されていて、スマホのアプリから遠隔操作できるみたいです。
+しかし、私の部屋のエアコンはそんなものには対応していません。
+そこで、偶然あった赤外線リモコンを使って、外部から操作できるようにしたいというお話です。
+この記事のほとんどが、ただ単に温度のみを解析した手順を記している雑記です。&lt;/p>
+&lt;h2 id="赤外線学習リモコン">赤外線学習リモコン
+&lt;/h2>&lt;p>赤外線学習リモコンは、PCにUSB等で接続して、エアコンを操作したり照明を操作するリモコンから発せられる
+赤外線信号を受信・送信することができるものです。&lt;/p>
+&lt;p>例えば、学習リモコンを受信モードにして、それ向かってエアコンのリモコンを操作し、赤外線データを記録します。
+その記録された赤外線データをそっくりそのまま送信することで、本体のリモコンを使用しなくても
+エアコンの操作ができるようになるわけです。&lt;/p>
+&lt;p>今回使用した赤外線学習リモコンは、そこら辺に転がっていた&lt;a class="link" href="https://bit-trade-one.co.jp/product/assemblydisk/ad00020/" target="_blank" rel="noopener"
+>AD00020 USB接続 赤外線リモコンキット&lt;/a>です。&lt;/p>
+&lt;p>そして、今回はこれをRaspberry Piに接続して使うため、Linuxで扱うためのツールが必要になります。
+このキット専用に開発された(すごい!)、&lt;a class="link" href="https://github.com/kjmkznr/bto_ir_cmd" target="_blank" rel="noopener"
+>bto_ir_cmd(GitHub)&lt;/a>を使用します。&lt;/p>
+&lt;h2 id="いざ受信">いざ受信
+&lt;/h2>&lt;p>Raspberry Piにキットを接続し、bto_ir_cmdをインストールしたら、&lt;code>bto_ir_cmd -e -r&lt;/code>コマンドで受信します。&lt;/p>
+&lt;p>例えば、26度設定で冷房をオンにする時に送信されたデータは以下のようになります。&lt;/p>
+&lt;p>&lt;code>01905223CB26010020580A06C0230000000803008B23CB26010020580A06C003000000&lt;/code>&lt;/p>
+&lt;h3 id="何が難しいのか">何が難しいのか
+&lt;/h3>&lt;p>エアコンの赤外線を自由自在に扱うためには少し難しいことをしなければなりません。&lt;/p>
+&lt;p>というのも、リモコンから送られてくるデータは、風量・温度・向きなどの、リモコンで設定し得る全てのデータを含んでいます。設定温度を使う範囲で全て試して保存しておけば簡単なのですが、それはロマンがない！&lt;/p>
+&lt;p>&lt;strong>せめて設定温度だけでも、設定した数字に対応した温度の赤外線データを作りたい&lt;/strong>。という話です。&lt;/p>
+&lt;h2 id="サンプルを集めてみる">サンプルを集めてみる
+&lt;/h2>&lt;p>温度に対応したデータを集めてみました。他の設定は全く変更しません。&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">26.0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">01905223CB26010020580A06C0230000000803008B23CB26010020580A06C003000000
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">26.5
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">01906F23CB26010020581A06C0230000000803009B23CB26010020581A06C023000000
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">27.0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">01906F23CB26010020580B06C0230000000803008C23CB26010020580B06C023000000
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">27.5
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">01906723CB26010020581B06C0230000000803009C23CB26010020581B06C023000000
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">28.0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">01902023CB26010020580C06C0230000000803008D23CB260100000000000000000000
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>「16進数っぽいな→4桁ずつ分割してみるか」という雑な発想で、わかりやすいように区切って図にまとめました。&lt;/p>
+&lt;figure>&lt;img src="./data.jpg"
+alt="example" width="700px">
+&lt;/figure>
+&lt;p>それぞれわかったことを色付けしたものが上記の図になります。&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>緑線&lt;/strong>部分は全ての場合で繰り返し送信がされている。&lt;/li>
+&lt;li>&lt;strong>赤色&lt;/strong>で囲んだ部分はデータが欠損している。&lt;/li>
+&lt;li>&lt;strong>黄色&lt;/strong>で塗った部分は全てに共通していたが、&lt;strong>水色&lt;/strong>部分は異なっていた。&lt;/li>
+&lt;li>&lt;strong>赤色&lt;/strong>部分は温度によって&lt;em>ほぼ&lt;/em>規則的な値変化が起こっている。&lt;/li>
+&lt;/ul>
+&lt;p>まず、このキットを使った場合だけかもしれませんが、欠損やずれが非常に多いように感じます。
+全く同じ設定で受信してもコードが異なる箇所がありましたが、何度か繰り返すと上記の図の黄色箇所部分と
+同じ値になるので、やはり少し誤差が生じるようです。&lt;/p>
+&lt;p>次に、緑線部分にあるように、より赤外線のデータの信頼性を上げるために2度同じデータを送る箇所がありました。
+これは冷暖房除湿問わず全ての設置で共通しています。ここは納得です。&lt;/p>
+&lt;p>一番重要な箇所が赤色部分です。ここだけほぼ規則的に変化しています。
+左側の赤マーカーで縦に引いた線は、「0A→1A→0B→1B→0C」と変化していきます。&lt;/p>
+&lt;p>中央右にあるものは、「8B→9B→8C→9C→8D」のように変化しています。&lt;/p>
+&lt;p>ここで気になるのは、一番下のデータです。
+左のデータは「0B→1B→0C→1C」と規則的に変化しているのとは裏腹に、
+「8C→9C→8D→8E」と、予想では&lt;code>9D&lt;/code>となるようなところが違っていました。
+ただ、この値に関しては&lt;code>9D&lt;/code>と修正しても何も問題なく動作しました。&lt;/p>
+&lt;h3 id="実際に送信してみて検証">実際に送信してみて検証
+&lt;/h3>&lt;p>上記の図から、25.0度にしたい場合は赤色の部分をそれぞれ対応させて送信してみます。&lt;/p>
+&lt;p>私の部屋のエアコンは、現在の設定温度から上昇したか下降したかによって、操作完了音が異なります。
+なので、元から24.5度の状態から送信した場合と25.5度から送信した場合の効果音を比較することにより、
+本当にその温度に設定できたのかを確認します。&lt;/p>
+&lt;p>このように検証してみたところ、基本的な範囲の温度については上記の図と同様に調整できることがわかりました。&lt;/p>
+&lt;p>こうして、検証を進めていましたが、面倒になったのでここまで&amp;hellip;&lt;/p></description></item><item><title>リンク集</title><link>https://takker.cc/p/links/</link><pubDate>Sat, 27 Jul 2024 21:43:22 +0900</pubDate><guid>https://takker.cc/p/links/</guid><description>&lt;p>このページに、私が個人的に興味深いと思った他のウェブサイトへのリンク一覧を載せました。随時更新されます。&lt;/p>
+&lt;p>&lt;a class="link" href="https://ericmurphy.xyz/blog/discoverability/" target="_blank" rel="noopener"
+>面白くて小さなウェブサイトを見つけるのはますます難しくなっている(英文記事)&lt;/a> という記事から、
+Eric Murphy氏が行なっていることを真似させていただきました。
+自身のブログとともに、彼の&lt;a class="link" href="https://ericmurphy.xyz/links/" target="_blank" rel="noopener"
+>Links&lt;/a>も非常に興味深いサイトばかりですので、ぜひご覧ください。&lt;/p>
+&lt;p>※が付いているものは英語が主に使用されているサイトです。&lt;/p>
+&lt;h3 id="面白いと思ったブログ">面白いと思ったブログ
+&lt;/h3>&lt;ul>
+&lt;li>&lt;a class="link" href="https://ericmurphy.xyz/" target="_blank" rel="noopener"
+>Eric Murphy※&lt;/a>&lt;/li>
+&lt;li>&lt;a class="link" href="https://btxx.org/" target="_blank" rel="noopener"
+>~bt※&lt;/a>&lt;/li>
+&lt;li>&lt;a class="link" href="https://www.paritybit.ca/blog/" target="_blank" rel="noopener"
+>paritybit.ca※&lt;/a>
+&lt;ul>
+&lt;li>例: &lt;a class="link" href="https://www.paritybit.ca/blog/are-todo-applications-a-waste-of-time/" target="_blank" rel="noopener"
+>タスク管理ツールは時間の無駄か&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;a class="link" href="https://2week.net" target="_blank" rel="noopener"
+>ガジェマガ&lt;/a>&lt;/li>
+&lt;/ul></description></item><item><title>問題集の進捗管理Webツール</title><link>https://takker.cc/p/study-progress-dev-1/</link><pubDate>Fri, 05 Jul 2024 21:43:22 +0900</pubDate><guid>https://takker.cc/p/study-progress-dev-1/</guid><description>&lt;p>数年前にもFlutterで同じようなものを作っていましたが、ClaudeのArtifacts機能に同じようなプログラムの命令を書き込んだら、良い感じに全部作ってくれたので、公開してみます。&lt;/p>
+&lt;p>&lt;a class="link" href="https://takker.cc/study-progress.html" target="_blank" rel="noopener"
+>問題集進捗管理ツール&lt;/a>&lt;/p>
+&lt;p>手動で書いた部分はエラー修正等ごくわずかで、ほぼ全てをClaudeに作ってもらいました。&lt;/p>
+&lt;figure>&lt;img src="./in.gif" width="400">
+&lt;/figure></description></item><item><title>Classi学習時間入力の自動化</title><link>https://takker.cc/p/auto-classi/</link><pubDate>Sun, 02 Jun 2024 21:43:22 +0900</pubDate><guid>https://takker.cc/p/auto-classi/</guid><description>&lt;p>私の通っている学校は&lt;a class="link" href="https://ja.wikipedia.org/wiki/Classi" target="_blank" rel="noopener"
+>Classi&lt;/a>の学習時間記録の入力を毎日強要してきます。
+これがかなり面倒で、Classiアプリも重く、また入力も頻繁に忘れてしまうことも多いので、自動化することにしました。&lt;/p>
+&lt;figure>&lt;img src="./ex.gif"
+alt="example" width="200px">
+&lt;/figure>
+&lt;h2 id="どのように自動化するか">どのように自動化するか
+&lt;/h2>&lt;p>数年前にもClassiが導入されていましたが、その時もラズパイでPythonとSeleniumを使って自動化していた記憶があります。&lt;/p>
+&lt;p>当時は学校ドメインのGoogleアカウントがなかったので、そのままIDでログインしていました。
+よって、ブラウザの自動操作だけでうまくいっていたのですが、今度はGoogleのSSOを使用するようになり、
+ブラウザ自動化が少々面倒になって諦めていました。&lt;/p>
+&lt;p>ただ最近どうしても時間記録が面倒だったのと、Shortcutsアプリの可能性を探ってみたかったこともあり、
+どうせならAPIを直接触ってやろうかなという試みです。&lt;/p>
+&lt;p>具体的には&lt;/p>
+&lt;ol>
+&lt;li>アプリの通信を解析し&lt;/li>
+&lt;li>コンピュータ上で試してから&lt;/li>
+&lt;li>iPhone上のShortcutsアプリで実行&lt;/li>
+&lt;/ol>
+&lt;p>できるようにしていきます。&lt;/p>
+&lt;h2 id="アプリの通信を解析">アプリの通信を解析
+&lt;/h2>&lt;h3 id="proxymanを使って通信解析をする">Proxymanを使って通信解析をする
+&lt;/h3>&lt;p>ブラウザの通信解析をしてもSSOあたりの挙動がよくわからなかったので、ログイン情報が保持される
+iOSのClassiアプリで通信を解析してみました。&lt;/p>
+&lt;p>数年前に国産ブラウザが通信傍受をしていたことを突き止めたというブログで、iDevice上の&lt;strong>HTTPSトラフィックも解析できる&lt;/strong>「&lt;strong>Charles Proxy&lt;/strong>」というアプリを知りました。これを使おうと思いましたが、1000円超のアプリでして、これだけのために払ってられないので、「&lt;strong>Proxyman&lt;/strong>」という無料の通信解析アプリを使用しました。&lt;/p>
+&lt;p>通信を全てこのアプリを通すことになるので危ない気がしますが、パパッとやっちゃえば大きな問題にはならないでしょう(多分)。&lt;/p>
+&lt;h3 id="proxymanの使い方">Proxymanの使い方
+&lt;/h3>&lt;p>How to setupに沿ってProxymanを設定すればあとは通信内容がリアルタイムで表示されます。
+無料版であれば2つのドメインだけHTTPSの内容を表示できます。&lt;/p>
+&lt;p>VPNを立ち上げた後、Classiのログイン→時間記録を開いたりしてると通信が発生することが確認できます。&lt;/p>
+&lt;p>これを地道に再現できれば外部からもアプリ同様の動作ができるわけですね。&lt;/p>
+&lt;p>試しに時間記録の画面を開くと、以下のようにjsonデータで記録データが見れてしまう。&lt;/p>
+&lt;p>&lt;figure>&lt;img src="./1.png"
+alt="example" width="200px">
+&lt;/figure>
+&lt;figure>&lt;img src="./2.png"
+alt="example" width="200px">
+&lt;/figure>
+&lt;/p>
+&lt;p>追記: mitmproxyは無料でHTTPSも解析できるようです。(要PC)&lt;/p>
+&lt;h3 id="ログイン記録する流れ">ログイン・記録する流れ
+&lt;/h3>&lt;p>アプリがどのように通信しているかがわかったので、これから外部からログインしてみます。&lt;/p>
+&lt;p>流れは冗長なので以下に簡単にまとめておきます。&lt;/p>
+&lt;ul>
+&lt;li>Bearer認証を行うためのAuthorizationヘッダのtokenを用意しておく
+&lt;ul>
+&lt;li>(これはアプリの通信から抜き取るしかないです)&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;code>id-api.host.xx/api/v1/my/access_tokens/extend&lt;/code>にauthヘッダをつけてPATCH&lt;/li>
+&lt;li>&lt;code>/api/v1/login/with_access_token&lt;/code>にauthヘッダをつけてPOST、アクセストークンを取得。(responseのdataの中の&lt;code>token=&lt;/code>がそれ)&lt;/li>
+&lt;li>&lt;code>/open?token=上で取得したトークン&lt;/code>でGET&lt;/li>
+&lt;li>&lt;code>study.host.xx/api/current_user&lt;/code>でGET
+&lt;ul>
+&lt;li>この2つの手順のどちらかだったかでcacheに情報が保存されます(適当)(Shortcutsではcacheを手動で扱えない)&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;code>/api/study/my_report/form&lt;/code>でformのjsonをPUT&lt;/li>
+&lt;/ul>
+&lt;p>大まかな流れです。&lt;/p>
+&lt;p>実際に手動で順を追って実行するときは、vscodeの&lt;a class="link" href="https://www.thunderclient.com/" target="_blank" rel="noopener"
+>Thunder Clientの拡張機能&lt;/a>を使うのがおすすめです。&lt;/p>
+&lt;h2 id="shortcutsに移植">Shortcutsに移植
+&lt;/h2>&lt;p>手動で実行できたら、これをShortcutsに移植します。&lt;/p>
+&lt;p>Shortcutsには「URLの内容を取得」という神アクションがあります。
+これは、request method, headerの指定、jsonでのrequestなど、様々なことができます。&lt;/p>
+&lt;p>上記に記載した手順のアクセストークンの取得でも、responseのjsonを読み取って抜き出すなど高度なこともできます。(以下は無理やりですが&amp;hellip;)&lt;/p>
+&lt;figure>&lt;img src="./3.png"
+alt="example" width="400px">
+&lt;/figure>
+&lt;h3 id="時間記録のjsonフォーマット">時間記録のjsonフォーマット
+&lt;/h3>&lt;p>formをつけてPUTすればそのまま時間記録のデータを上書きできます。&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;span class="lnt">29
+&lt;/span>&lt;span class="lnt">30
+&lt;/span>&lt;span class="lnt">31
+&lt;/span>&lt;span class="lnt">32
+&lt;/span>&lt;span class="lnt">33
+&lt;/span>&lt;span class="lnt">34
+&lt;/span>&lt;span class="lnt">35
+&lt;/span>&lt;span class="lnt">36
+&lt;/span>&lt;span class="lnt">37
+&lt;/span>&lt;span class="lnt">38
+&lt;/span>&lt;span class="lnt">39
+&lt;/span>&lt;span class="lnt">40
+&lt;/span>&lt;span class="lnt">41
+&lt;/span>&lt;span class="lnt">42
+&lt;/span>&lt;span class="lnt">43
+&lt;/span>&lt;span class="lnt">44
+&lt;/span>&lt;span class="lnt">45
+&lt;/span>&lt;span class="lnt">46
+&lt;/span>&lt;span class="lnt">47
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-json" data-lang="json">&lt;span class="line">&lt;span class="cl">&lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;activityTimeReports&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;awokeAt&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="kc">null&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;schoolAt&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="kc">null&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;homeAt&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="kc">null&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;workStartedAt&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="kc">null&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;sleptAt&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="kc">null&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">},&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;satisfactionRate&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;timeRating&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="kc">null&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;contentRating&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="kc">null&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">},&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;subjectLearningReports&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="p">[&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;subjectId&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="mi">13&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="c1">// 国語
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nt">&amp;#34;learnedMinutes&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="mi">30&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;note&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="kc">null&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">},&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;subjectId&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="mi">14&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="c1">// 数学
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nt">&amp;#34;learnedMinutes&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="mi">30&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="c1">// 勉強時間(min)
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nt">&amp;#34;note&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="kc">null&lt;/span> &lt;span class="c1">// コメント
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="p">},&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;subjectId&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="mi">15&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;learnedMinutes&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="mi">60&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;note&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="kc">null&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">},&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;subjectId&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="mi">16&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;learnedMinutes&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="mi">0&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;note&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="kc">null&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">},&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;subjectId&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="mi">17&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;learnedMinutes&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="kc">null&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;note&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="kc">null&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">},&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;subjectId&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="mi">18&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;learnedMinutes&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="kc">null&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;note&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="kc">null&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">],&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;studentMessage&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="kc">null&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="c1">// コメント
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nt">&amp;#34;date&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="s2">&amp;#34;2024-06-02&amp;#34;&lt;/span> &lt;span class="c1">// 日付
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>&lt;code>subjectId&lt;/code>が教科、&lt;code>learnedMinuted&lt;/code>が勉強時間、&lt;code>note&lt;/code>がコメントのようです。&lt;/p>
+&lt;h3 id="formの送信">formの送信
+&lt;/h3>&lt;p>PUT requestでformを送信するときにハマりました。そのまま辞書をアクション内に突っ込むと面倒だったので、以下のように行います。&lt;/p>
+&lt;p>「テキスト」でjsonを使ってから、「本文を要求」を「ファイル」に設定し、それに変数「テキスト」を指定すれば問題なくrequestを送ることができます。&lt;/p>
+&lt;figure>&lt;img src="./4.png"
+alt="example" width="400px">
+&lt;/figure>
+&lt;p>あとは日付を取得→jsonに日付を付け、実行するShortcutを作れば完成です。&lt;/p>
+&lt;h2 id="自動実行">自動実行
+&lt;/h2>&lt;p>自動入力に関しては、Shortcutsのオートメーションタブから設定できます。&lt;/p>
+&lt;figure>&lt;img src="./5.jpg"
+alt="example" width="200px">
+&lt;/figure>
+&lt;p>これで完全自動化できました。&lt;/p></description></item><item><title>Picocryptでファイル暗号化</title><link>https://takker.cc/p/how-to-use-picocrypt/</link><pubDate>Thu, 16 Mar 2023 18:36:55 +0900</pubDate><guid>https://takker.cc/p/how-to-use-picocrypt/</guid><description>&lt;p>秘密の写真やキーファイルなど、細かいファイル単位の「他人に見られたくないファイルをパスワードで暗号化して保存したい」みたいなことがあると思います。&lt;/p>
+&lt;p>Windows Home版や外付けHDD, USBのデータは暗号化なし状態で保存されていることがほとんどで、ドライブへの物理的アクセスが可能であればすぐに秘密のファイルが見られてしまいます。また、クラウドストレージでもエンドツーエンド暗号化(E2EE)が実装されているサービスは少なく(有名どころでiCloudの&lt;a class="link" href="https://support.apple.com/ja-jp/HT212520" target="_blank" rel="noopener"
+>高度なデータ保護&lt;/a>)、サービスプロバイダがファイルを閲覧することが事実上可能になっています。&lt;/p>
+&lt;p>全てのファイルとはいかなくとも、機密ファイルだけはパスワードで暗号化して自分だけがアクセスできるようにしたいという需要が生まれます。その最初のやり方としてまず&lt;strong>パスワード付き圧縮ファイル&lt;/strong>にすることがあげられます。7-Zipなどのソフトウェアを使えば、圧縮するついでに安全な暗号化をすることでセキュリティを確保することができます。&lt;/p>
+&lt;h2 id="picocrypt">Picocrypt
+&lt;/h2>&lt;p>そして、別のソフトウェアとしてこの記事で紹介するPicocryptは、7-ZipやVeraCryptなどと同じくファイル暗号化機能を提供するものです。7-Zipの機能を使えば圧縮のおまけ機能として暗号化ができますが、これは&lt;strong>暗号化専用ソフト&lt;/strong>になっています。&lt;/p>
+&lt;h2 id="メリットと使い道">メリットと使い道
+&lt;/h2>&lt;p>メリットは、以下の通りです。&lt;/p>
+&lt;ul>
+&lt;li>完全なオープンソース&lt;/li>
+&lt;li>セットアップ・暗号化が簡単&lt;/li>
+&lt;li>ファイルサイズが極小(3MB)&lt;/li>
+&lt;li>セキュリティ第一の設計&lt;/li>
+&lt;/ul>
+&lt;p>VeraCryptとは違い、特別な領域のセットアップなどが不要で、ファイルを&lt;strong>ドラッグ&amp;amp;ドロップで簡単に暗号化&lt;/strong>できる設計になっているので、用途としては単体だったり小さめのファイルを暗号化するのに向いています。&lt;/p>
+&lt;ul>
+&lt;li>フルディスクを暗号化したいならBitLocker(FileVault)またはVeraCrypt&lt;/li>
+&lt;li>クラウドでファイルシステムのように使いたい場合はCryptomator&lt;/li>
+&lt;li>モバイルで使う予定があるなら有料のCryptomator&lt;/li>
+&lt;li>小さいファイルや単体で暗号化したい場合はPicoCrypt&lt;/li>
+&lt;li>クロスプラットフォームで簡単に使えるGUIが欲しいならPicoCrypt&lt;/li>
+&lt;li>セキュリティを重視する場合はPicoCrypt&lt;/li>
+&lt;/ul>
+&lt;p>という感じですね。「2段階認証の回復キーを暗号化してUSBに保存したい」みたいな時もVeraCryptで別途領域を作るよりはPicoCryptで作った方が楽かもしれません。生成されるのは原則一つのファイルなので、それを&lt;strong>コピーするだけでバックアップ&lt;/strong>も取れます。&lt;/p>
+&lt;h2 id="導入方法">導入方法
+&lt;/h2>&lt;p>&lt;a class="link" href="https://github.com/HACKERALERT/Picocrypt/releases" target="_blank" rel="noopener"
+>PicoCryptのGithub Releasesページ&lt;/a>にアクセスします。お使いのOSにあった最新バージョンのものをダウンロードしてください。Windowsなら&lt;code>.exe&lt;/code>、MacOSなら&lt;code>.app.zip&lt;/code>のものをダウンロードします。&lt;/p>
+&lt;figure>&lt;img src="./pc_assets.png" width="400">
+&lt;/figure>
+&lt;h2 id="基本的な使い方">基本的な使い方
+&lt;/h2>&lt;h3 id="暗号化">暗号化
+&lt;/h3>&lt;p>Picocryptを起動すると、このような画面になっていると思います。&lt;/p>
+&lt;figure>&lt;img src="./pc_screen.png" width="400">
+&lt;/figure>
+&lt;p>暗号化したいファイルをウィンドウ内にドラッグ&amp;amp;ドロップします。&lt;/p>
+&lt;p>するとパスワードが入力できるようになるので、自分が忘れない強固なパスワードを入力してください。また「Create」ボタンから新しいパスワードをランダムに生成することもできます。&lt;/p>
+&lt;p>一番下は保存先です。デフォルトでは同じパスに &lt;code>ファイル名.元拡張子.pcv&lt;/code> の形式のファイルとして保存されます。「Change」ボタンから指定した保存先を選択することができます。&lt;/p>
+&lt;p>最後に「Encrypt」ボタンをクリックするとファイルの暗号化が開始されます。ローエンドのノートPCで1GBの複数の動画ファイルを暗号化してみましたが、標準の設定では20秒程度で完了しました。&lt;/p>
+&lt;figure>&lt;img src="./pc_dnd.gif" width="400">
+&lt;/figure>
+&lt;h3 id="復号pcvファイルを元に戻す">復号(pcvファイルを元に戻す)
+&lt;/h3>&lt;p>同じようにpcvファイルをウィンドウ内にドラッグ&amp;amp;ドロップして、パスワード欄に設定したパスワードを入力して「Decrypt」ボタンを押せば暗号化を解除することができます。&lt;/p>
+&lt;h2 id="高度な使い方">高度な使い方
+&lt;/h2>&lt;p>ここからは他の暗号化ソフトではできないセキュリティを強化するPicocryptの使い方を紹介します。&lt;/p>
+&lt;h3 id="キーファイル">キーファイル
+&lt;/h3>&lt;p>パスワードだけではなく、&lt;strong>自分だけが持っているファイル&lt;/strong>(キーファイル)を使って暗号化することができます。
+自分だけが持っている画像などのファイルでも、新たに生成することもできます。
+チームで使う場合は、それぞれ1人ずつキーファイルを所持し、全員がいないと開けられないという構成にすることもできます。&lt;/p>
+&lt;p>Keyfilesの「Edit」ボタンを押して、出てきたダイアログにキーファイルをドラッグ&amp;amp;ドロップします。「Create」でランダムなキーファイルを作れます。&lt;/p>
+&lt;h3 id="paranoid-mode">Paranoid mode
+&lt;/h3>&lt;p>複数の暗号化方式を使用するなどして最高レベルの暗号化をすることができます。ただし、公式でも言われているように、処理速度が遅くなるので、政府機関や脅威にさらされている内部告発者でない限り必要性はあまりないと思われます。&lt;/p>
+&lt;h3 id="ファイル圧縮">ファイル圧縮
+&lt;/h3>&lt;p>「Compress files」のチェックを入れればzipで圧縮してくれます。&lt;/p>
+&lt;h3 id="reed-solomon">Reed-Solomon
+&lt;/h3>&lt;p>&lt;a class="link" href="https://ja.wikipedia.org/wiki/%E3%83%AA%E3%83%BC%E3%83%89%E3%83%BB%E3%82%BD%E3%83%AD%E3%83%A2%E3%83%B3%E7%AC%A6%E5%8F%B7" target="_blank" rel="noopener"
+>リード・ソロモン符号&lt;/a>を使用して最大3%ファイルが破損しても誤り修正をすることができる設定です。暗号化と復号化に著しく時間がかかるので、クラウドや外部HDDに長期保存するのに向いています。&lt;/p>
+&lt;h3 id="delete-files">Delete files
+&lt;/h3>&lt;p>復号化する際ファイルの改竄が検知された場合に自動的に削除するオプションです。&lt;/p>
+&lt;h3 id="ファイルの分割">ファイルの分割
+&lt;/h3>&lt;p>「Split into chunks」オプションはファイルを指定した単位で分割することができます。&lt;/p>
+&lt;h2 id="まとめ">まとめ
+&lt;/h2>&lt;p>以上がPicocryptの使い方になります。言語が英語のみの対応になっているので抵抗感がありますが、他のソフトよりも簡単にファイルを暗号化できるので、PC1台に1つは導入しておくと良いのではないでしょうか。&lt;/p></description></item><item><title>Scrapboxを使い始めた</title><link>https://takker.cc/p/scrapbox-start/</link><pubDate>Sat, 27 Aug 2022 21:43:22 +0900</pubDate><guid>https://takker.cc/p/scrapbox-start/</guid><description>&lt;p>最近&lt;a class="link" href="https://scrapbox.io" target="_blank" rel="noopener"
+>Scrapbox&lt;/a>を使い始めました。
+Google Keep的にメモを残せて、個人的な知識管理(PKM)として使えるらしいと聞いて少し前に使い始めました。
+自分のProjectがちょうど100ページを超えてきたので、初心者なりに使ってみた感想を書き残したい思います。&lt;/p>
+&lt;p>以前は&lt;a class="link" href="https://obsidian.md" target="_blank" rel="noopener"
+>Obsidian&lt;/a>も使っていたので、それとの比較も込めて良い点・微妙な点を列挙してみました。&lt;/p>
+&lt;h2 id="良い点">良い点
+&lt;/h2>&lt;h3 id="ホーム画面のグリッド表示が見やすい">ホーム画面のグリッド表示が見やすい
+&lt;/h3>&lt;p>Scrapboxの特徴として、プロジェクトホーム画面にカード型のページリンクがグリッド表示されている点があります。&lt;/p>
+&lt;p>これ、Scrapboxの良い点として検索しても全然見つからないのですが、かなり助かっています。UserCSSでこの表示すら消す人も稀にいるみたいですが、何よりも最近編集したページを探しやすい。&lt;/p>
+&lt;p>ページのタイトルだけではなく、中身のテキストの内容や、画像がある場合は画像がカード内に表示されるので、カードの中身がどのようなページなのか思い出しやすくなります。&lt;/p>
+&lt;p>Obsidianではサイドバーにファイル名が小さく一覧表示されるだけなので、Obsidianでも実装されないかな&amp;hellip;と思っています(自分でプラグインを作れるなら作りたい)&lt;/p>
+&lt;h3 id="書けば書くほど伸びていくカード">書けば書くほど伸びていくカード
+&lt;/h3>&lt;p>Scrapboxのページを新規作成すると、小さい横長のカードが表示されます。ここにタイトルや本文を書けば書くほど下に伸びていくカードのような形になっています。&lt;/p>
+&lt;p>ただの見た目だけの話ですが、これが書いていて気持ちいい。他の高機能エディタのようにファイルを作成すると無限に書けそうな広大な空白の領域が表示されるわけでもなく、最初にカード型で表示させて「あくまでもメモだから付箋に書くくらいの内容量で良いよ」と暗黙的に示されている気がします。(気のせい?)&lt;/p>
+&lt;p>Scrapboxの思想とは少し違う気もしますが、界隈でよく言われるZettelkastenのアトミックノートに近いものを書こうという気になれます。アトミックノートとは、なるべく一つのページに対して一トピック、タイトルの内容のみしか書かれていない最小単位のノートのことです。このことを気をつけるだけで、ノート間のリンクが作りやすくなるため、ノートの長さが長くなりすぎないカード型と言うのは理にかなっている気がします。&lt;/p>
+&lt;p>非常に小さい話ですが、エディタの見た目って大事な気がします。書くためのモチベーションがなければだめですからね。今後はどうでもよくなるかもしれませんが、最初の内は相当気持ちよくて助かっています。&lt;/p>
+&lt;h3 id="箇条書きテキストが良い">箇条書き+テキストが良い
+&lt;/h3>&lt;p>AppleのノートアプリやEvernoteでは、リッチテキストでそのまま書き殴ることが多いと思います。箇条書きはあくまで箇条書きであって、物の名前の一覧などの項目を書くものとしか使いません。&lt;/p>
+&lt;p>しかし、Scrapboxでは長い文章や議論では箇条書きで書くことが便利な設計になっています。例えば、空白の行でスペースを入力するとすぐに箇条書きができるようになります。また、ショートカットキーによる項目の移動が簡単にできます。&lt;/p>
+&lt;p>この書きやすい箇条書きシステムによって、私のプロジェクトでは、ページ全体で箇条書きを使う割合が増えました。箇条書きは思考を書き出すのに非常に便利で、文章に対して枝状に伸ばしていくことができます。マインドマップの文章版のようなものといったらいいのでしょうか。今自分が何について考えているのか、どこを発展させたいのかを簡潔な文章で書くことができます。&lt;/p>
+&lt;p>また、完全なアウトライナーと違い、普通のテキストも一緒にページ内に書き込むことができるため、さまざまな用途で活用できます。Obsidianでテキストと一緒に箇条書きをMarkdownで書くとプレビューした時に微妙にずれて、書き心地がScrapboxより少し劣る感じでした。&lt;/p>
+&lt;h3 id="public-projectが無料">Public Projectが無料
+&lt;/h3>&lt;p>Scrapboxのプロジェクトの種類は、公開にするか、非公開にするかの二択しかありません。個人で利用する場合は基本無料ですが、公開する場合は団体でも企業でも無料になります。&lt;/p>
+&lt;p>ブログ風に使っても、そのまま箇条書きを公開する運用でも、自分のテキストを無料で公開できます。Obsidianで公開する場合は、月額数ドルのコストがかかりますが、Scrapboxの場合は無料です。&lt;/p>
+&lt;p>私はまだPublic Projectとして公開しているものはありませんが、そのうちprivate projectの一部を公開する運用にしようかなと企んでいます。Publicだと、プロジェクトのURLを投げるだけで簡単に相手に見てもらうことができます。&lt;/p>
+&lt;h3 id="リンク機能">リンク機能
+&lt;/h3>&lt;p>一般的なメモツールにはあまりない特徴ですが、ScrapboxやObsidianにはリンク機能があります。リンク機能はWikipediaのようにページからページへリンクを貼り、関連づけることができます。&lt;/p>
+&lt;p>Scrapboxにはこれに加え、「リンクした先のページにリンクしている別のページ」(厳密に言えば少し違う)の一覧を表示してくれる機能(2hop-links)があります。これにより、過去に書いたページを掘り出すことができ、昔のメモの活用に繋げることができます。&lt;/p>
+&lt;p>フォルダやタグで管理していた時は、昔のメモを発見したり見返したりすることはなく、ただただ分類に迷ったりページを作るごとにタグを付与しなければなりませんでしたが、Scrapboxではページ内に一つリンクを貼るだけで良くなりました。&lt;/p>
+&lt;p>これにより、気軽にポンポンページを作っちゃうこともできるようになったわけです。&lt;/p>
+&lt;h3 id="同期が早い">同期が早い
+&lt;/h3>&lt;p>これは、もともとScrapboxがチームでの使用を想定して作った同時編集の技術により、個人で使った場合も編集をしたら即保存してくれるため、どの端末からアクセスしても常に最新の状態にアクセスできます。&lt;/p>
+&lt;p>NotionやEvernoteといったサービスも同じですが、ObsidianやLogseqを無料で使った場合にiCloudのファイル同期が遅かったり失敗することもあったので、その点安心できます。&lt;/p>
+&lt;h2 id="微妙な点">微妙な点
+&lt;/h2>&lt;p>ここまでScrapboxの良い点を挙げてみましたが、気になった点もいくつかありました。&lt;/p>
+&lt;h3 id="インターネットへの接続が必要">インターネットへの接続が必要
+&lt;/h3>&lt;p>Scrapboxは現在公式にはWeb版のみの提供となっており、公式のiOSやAndroid、Desktopのアプリが存在しません。&lt;/p>
+&lt;p>これによって、インターネットへの常時接続が必要になります。オフラインで編集することはできません。自分のコンピュータがインターネットに接続されていない状況はほとんどありませんが、サーバーダウン等が発生した場合にページにアクセスできない事態が発生します。&lt;/p>
+&lt;h3 id="モバイル上での体験">モバイル上での体験
+&lt;/h3>&lt;p>先ほども書いたように、モバイルアプリがないため、iPhoneではWeb版を使用する必要があります。ネイティブアプリ程の操作性ではないため、テキストの選択や移動に引っかかることがあります。PWAとしてScrapboxを使っても、起動から書き込めるようになるまでに多少のタイムラグがあります。&lt;/p>
+&lt;h3 id="稀に動作が遅い">稀に動作が遅い
+&lt;/h3>&lt;p>ほとんどの場合はコンピュータ内にもキャッシュされていますが、稀にページを開くのに5秒程度かかることがあります。&lt;/p>
+&lt;h3 id="独自フォーマット">独自フォーマット
+&lt;/h3>&lt;p>Scrapboxは良くも悪くも独自フォーマットを使用しています。これによって箇条書きの書きやすさや幅広い表現度を実現しているわけです。&lt;/p>
+&lt;p>ObsidianやLogseqのようにMarkdown形式ではないため、サービス終了時や乗り換えをしようと思った時にエクスポートしたデータを一手間加工しないといけません。scrapboxをmarkdownに変換するツールが乱立していますが、コンピュータに精通していない限り扱うのは難しいと思います。&lt;/p>
+&lt;h2 id="これからどう使うか">これからどう使うか
+&lt;/h2>&lt;p>今回はScrapboxのメリット・デメリットをひたすら書いてみました。結論としては、これからも使い続ける予定です。ObsidianのプラグインなどでScrapboxの使用感に近づけられたら最高だなとは思いますが、UXの良さは個人的にはScrapboxの方が上でした。&lt;/p></description></item></channel></rss>
