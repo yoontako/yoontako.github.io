@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>光州学院日本校 - 総合学習サポートシステム</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #e0f7ff;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #1e90ff;
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+        }
+        .logo {
+            font-size: 2em;
+            font-weight: bold;
+        }
+        nav {
+            background-color: #4682b4;
+            padding: 10px 0;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+        }
+        nav ul li {
+            margin: 0 15px;
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+        nav ul li a:hover {
+            color: #b0e0e6;
+        }
+        .content {
+            display: flex;
+            margin-top: 20px;
+        }
+        .main {
+            flex: 3;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .sidebar {
+            flex: 1;
+            background-color: #d6f0ff;
+            padding: 20px;
+            margin-left: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .progress-bar {
+            background-color: #ddd;
+            height: 20px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        .progress {
+            background-color: #1e90ff;
+            height: 100%;
+            border-radius: 10px;
+            text-align: right;
+            padding-right: 5px;
+            color: white;
+            font-weight: bold;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #1e90ff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #4682b4;
+        }
+        footer {
+            background-color: #1e90ff;
+            color: white;
+            text-align: center;
+            padding: 15px 0;
+            margin-top: 20px;
+        }
+        .course-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .course-card {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 15px;
+        }
+        .past-exam {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .chart-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+        .info-box {
+            background-color: #d6f0ff;
+            border-left: 5px solid #1e90ff;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .task-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .task-list li {
+            background-color: #f9f9f9;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">光州学院 日本校</div>
+        <p>未来を育む学びのパートナー - 個別最適化された学習体験を提供します</p>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="#home">ホーム</a></li>
+            <li><a href="#courses">講座一覧</a></li>
+            <li><a href="#past-exams">過去問</a></li>
+            <li><a href="#progress">学習進捗</a></li>
+            <li><a href="#forum">質問フォーラム</a></li>
+            <li><a href="#schedule">スケジュール</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <div id="home" class="content">
+            <main class="main">
+                <h2>ようこそ、笹倉渉稜さん</h2>
+                <p>今日の学習目標: 数学III 微分法の演習問題を10問解く</p>
+                <div class="info-box">
+                    <h3>今週の学習アドバイス</h3>
+                    <p>英語の成績が伸び悩んでいます。リスニング力を強化するために、毎日15分のシャドーイングを追加しましょう。また、長文読解の速度を上げるために、時間を計りながら読む練習を行うことをおすすめします。</p>
+                </div>
+                <h3>お知らせ</h3>
+                <ul>
+                    <li><strong>9月20日(水) 19:00から全国模擬試験</strong> - オンラインで実施されます。事前に接続テストを行ってください。<a href="#">申し込みはこちら</a></li>
+                    <li><strong>新教材「グローバルトーク」追加</strong> - ネイティブスピーカーによる実践的な英語リスニング教材です。TOEFL iBT対策にも最適です。</li>
+                    <li><strong>10月1日(日)は文化祭のため休講</strong> - 自習室は通常通り利用可能です。</li>
+                </ul>
+                <h3>今週の課題</h3>
+                <ul class="task-list">
+                    <li>✅ α実践 新潟大学 過去問演習（提出済）</li>
+                    <li>✅ 古文 - 古文読解の基礎Aコース（提出済）</li>
+                    <li>⬜ 数学 - 式と曲線の応用問題（期限: 9/18）
+                        <p>テキストp.56-58の問題27-36を解いてください。</p>
+                    </li>
+                    <li>⬜ 英語 - リーディング Section 5-7（期限: 9/19）
+                        <p>環境問題に関する長文3題です。各文章を読んだ後、要約を200字以内で作成してください。</p>
+                    </li>
+                </ul>
+                <a href="#" class="button">課題を提出する</a>
+            </main>
+            <aside class="sidebar">
+                <h3>学習進捗</h3>
+                <div class="progress-bar">
+                    <div class="progress" style="width: 75%;">数学 75%</div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress" style="width: 60%;">英語 60%</div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress" style="width: 80%;">国語 80%</div>
+                </div>
+                <h3>次回の授業</h3>
+                <p><strong>数学III</strong> - 9月15日(金) 18:00-19:30<br>
+                内容: 微分法の応用 - 接線と法線</p>
+                <p><strong>英語長文読解</strong> - 9月16日(土) 10:00-11:30<br>
+                内容: 科学技術文献の読解と要約</p>
+                <h3>最近の成績</h3>
+                <p>全国模擬試験（9/1実施）: 偏差値 62.5<br>
+                前回比 +2.3 上昇</p>
+                <a href="#" class="button">詳細な成績分析を見る</a>
+            </aside>
+        </div>
+        
+        <div id="courses" class="content">
+            <main class="main">
+                <h2>講座一覧</h2>
+                <p>光州学院では、あなたの学力と目標に合わせて最適な講座を提供しています。各講座は、経験豊富な講師陣が担当し、最新の教育手法を取り入れています。</p>
+                <div class="course-list">
+                    <div class="course-card">
+                        <h3>数学III 難関数学攻略の道β</h3>
+                        <p>難関大学への数学対策講座</p>
+                        <p>内容: 極限・微分・積分の応用、複素数平面</p>
+                        <p>担当: 佐藤先生（東大理学部卒）</p>
+                        <p>進捗: 75%</p>
+                        <a href="#" class="button">講座詳細</a>
+                    </div>
+                    <div class="course-card">
+                        <h3>英語長文読解 発展Jコース</h3>
+                        <p>大学入試レベルの長文読解力養成</p>
+                        <p>内容: 学術論文、文学作品、新聞記事の読解</p>
+                        <p>担当: Smith先生（ネイティブスピーカー）</p>
+                        <p>進捗: 60%</p>
+                        <a href="#" class="button">講座詳細</a>
+                    </div>
+                    <div class="course-card">
+                        <h3>現代文基礎【標準】 A12</h3>
+                        <p>評論と小説の読解力を鍛える</p>
+                        <p>内容: 文章構造分析、著者の意図理解、要約技法</p>
+                        <p>担当: 山本先生（現役大学教授）</p>
+                        <p>進捗: 80%</p>
+                        <a href="#" class="button">講座詳細</a>
+                    </div>
+                    <div class="course-card">
+                        <h3>化学【難関】 基礎から発展</h3>
+                        <p>理論化学から有機化学まで網羅</p>
+                        <p>内容: 化学反応の平衡、有機化合物の構造と反応</p>
+                        <p>担当: 田中先生（元高校教師、教育研究賞受賞）</p>
+                        <p>進捗: 50%</p>
+                        <a href="#" class="button">講座詳細</a>
+                    </div>
+                </div>
+            </main>
+            <aside class="sidebar">
+                <h3>お勧めの講座</h3>
+                <p><strong>物理基礎 - 力学の基本を学ぼう</strong><br>
+                物理が苦手な人向けの入門講座です。日常生活の例を多く用いて、直感的に理解できるよう工夫されています。</p>
+                <p><strong>世界史 - 年代暗記のコツ</strong><br>
+                ゴロ合わせや図解を用いた効率的な暗記法を学びます。重要な歴史的事象の関連性を理解し、長期記憶に定着させる技術を習得できます。</p>
+                <a href="#" class="button">全ての講座を見る</a>
+            </aside>
+        </div>
+        
+        <div id="past-exams" class="content">
+            <main class="main">
+                <h2>過去問演習</h2>
+                <p>過去問演習は、実際の試験問題を解くことで、出題傾向を把握し、時間配分や解答テクニックを身につけるための重要なトレーニングです。各問題セットには、詳細な解説と採点基準が含まれています。</p>
+                <div class="past-exam">
+                    <h3>2019年度 センター試験 英語</h3>
+                    <p>問題数: 50問 | 制限時間: 80分</p>
+                    <p>特徴: リスニングセクションを含む総合的な英語力を測定</p>
+                    <p>平均点: 65.3点 | 昨年度からの変化: +2.1点</p>
+                    <a href="#" class="button">開始する</a>
+                </div>
+                <div class="past-exam">
+                    <h3>2022年度 北海道大学 数学</h3>
+                    <p>問題数: 6問 | 制限時間: 120分</p>
+                    <p>特徴: 高度な論理的思考力と数学的直感力を要する問題が出題</p>
+                    <p>難易度: ★★★★☆ | 受験者平均点: 58.7点</p>
+                    <a href="#" class="button">開始する</a>
+                </div>
+                <div class="past-exam">
+                    <h3>2023年度 京都大学 物理</h3>
+                    <p>問題数: 4問 | 制限時間: 90分</p>
+                    <p>特徴: 実験データの解析と理論的考察を組み合わせた総合的な問題</p>
+                    <p>難易度: ★★★★★ | 受験者平均点: 52.3点</p>
+                    <a href="#" class="button">開始する</a>
+                </div>
+                <div class="info-box">
+                    <h3>過去問演習のコツ</h3>
+                    <p>1. 時間を計って解答する: 本番の試験と同じ条件で解くことで、時間配分の感覚を養います。</p>
+                    <p>2. 解答後は必ず見直す: 間違えた問題だけでなく、正解した問題も見直すことで理解を深めます。</p>
+                    <p>3. 傾向分析を行う: 出題パターンや頻出分野を把握し、効率的な学習計画を立てましょう。</p>
+                </div>
+            </main>
+            <aside class="sidebar">
+                <h3>最近の成績</h3>
+                <p>センター試験模試（英語）: 85点<br>
+                全国平均: 71点 | 偏差値: 63.2</p>
+                <p>数学III 中間テスト: 92点<br>
+                クラス平均: 78点 | 順位: 3/45</p>
+                <p>物理 期末テスト: 88点<br>
+                クラス平均: 72点 | 順位: 5/45</p>
+                <a href="#" class="button">全ての成績を見る</a>
+                <div class="info-box">
+                    <h3>今週の学習アドバイス</h3>
+                    <p>英語の成績が安定してきました。次は物理の順位アップを目指しましょう。演習量を増やし、特に力学の分野を重点的に復習することをおすすめします。</p>
+                </div>
+            </aside>
+        </div>
+        
+        <div id="progress" class="content">
+            <main class="main">
+                <h2>学習進捗</h2>
+                <p>あなたの学習進捗を科目ごとに可視化しています。この情報を基に、効率的な学習計画を立てることができます。</p>
+                <div class="chart-container">
+                    <canvas id="progressChart"></canvas>
+                </div>
+                <div class="info-box">
+                    <h3>進捗分析</h3>
+                    <p>数学と国語で高い進捗が見られます。特に数学は微分・積分の理解度が高く、応用問題にも取り組めるレベルに達しています。</p>
+                    <p>一方、英語と理科（特に物理）にやや遅れが見られます。英語はリスニング力の強化、物理は基本概念の復習から始めることをおすすめします。</p>
+                </div>
+                <h3>週間学習時間</h3>
+                <div class="chart-container">
+                    <canvas id="studyTimeChart"></canvas>
+                </div>
+                <div class="info-box">
+                    <h3>学習時間分析</h3>
+                    <p>平日の学習時間が比較的少なくなっています。可能であれば、平日の学習時間を1日30分ほど増やすことをおすすめします。</p>
+                    <p>土曜日の学習時間が最も長くなっていますが、疲労度を考慮して、日曜日にも適度な休息を取りながら学習を行うことが効果的です。</p>
+                </div>
+            </main>
+            <aside class="sidebar">
+                <h3>学習アドバイス</h3>
+                <p><strong>英語：</strong> リスニング力強化のため、毎日15分のシャドーイングを追加しましょう。オンライン教材「グローバルトーク」を活用してください。</p>
+                <p><strong>数学：</strong> 現在の良好なペースを維持しています。より高度な応用問題に挑戦する時期に来ています。</p>
+                <p><strong>物理：</strong> 基本法則の理解を深めるため、概念説明型の問題を中心に演習を行いましょう。</p>
+                <a href="#" class="button">詳細な分析を見る</a>
+                <div class="info-box">
+                    <h3>今月の目標</h3>
+                    <p>1. 英語リスニングスコア10%向上</p>
+                    <p>2. 物理の基本法則5つを完全に理解し、説明できるようになる</p>
+                    <p>3. 数学の発展問題集を50問解く</p>
+                </div>
+            </aside>
+        </div>
+
+        <div id="forum" class="content">
+            <main class="main">
+                <h2>質問フォーラム</h2>
+                <p>仲間や先生と知識を共有し、疑問を解決するための場所です。質問をする前に、類似の質問がないか確認してください。</p>
+                <div class="info-box">
+                    <h3>人気の質問</h3>
+                    <p><strong>Q: 複素数の極形式と指数形式の違いは何ですか？</strong></p>
+                    <p>A: 極形式は複素数を絶対値と偏角で表し、指数形式はオイラーの公式を使って表現します。詳細な説明と例題は<a href="#">こちら</a>。</p>
+                </div>
+                <h3>最近の質問</h3>
+                <ul class="task-list">
+                    <li><strong>英語：関係代名詞のwhichとthatの使い分けについて</strong><br>
+                    回答数：3 | 最終更新：2時間前</li>
+                    <li><strong>物理：単振動の周期と振幅の関係がわかりません</strong><br>
+                    回答数：5 | 最終更新：1日前</li>
+                    <li><strong>古文：助動詞「き」と「けり」の違いを教えてください</strong><br>
+                    回答数：2 | 最終更新：3日前</li>
+                </ul>
+                <a href="#" class="button">質問する</a>
+                <a href="#" class="button">すべての質問を見る</a>
+            </main>
+            <aside class="sidebar">
+                <h3>質問のコツ</h3>
+                <p>1. 具体的に質問する：「わかりません」ではなく、どの部分がわからないかを明確に</p>
+                <p>2. 自分の考えも書く：完全な回答でなくても、自分なりの推論を示すと、より的確なアドバイスが得られます</p>
+                <p>3. 関連する情報を提供する：教科書のページ数や、問題の出典などを明記すると、回答者が文脈を理解しやすくなります</p>
+                <div class="info-box">
+                    <h3>注目の回答者</h3>
+                    <p><strong>田中先生（数学）</strong><br>
+                    回答数：128 | 高評価率：98%</p>
+                    <p><strong>佐藤さん（3年生）</strong><br>
+                    回答数：75 | 高評価率：92%</p>
+                </div>
+            </aside>
+        </div>
+
+        <div id="schedule" class="content">
+            <main class="main">
+                <h2>スケジュール</h2>
+                <p>効率的な学習のために、しっかりとした計画を立てましょう。以下はあなたの今週のスケジュールです。</p>
+                <div class="info-box">
+                    <h3>今日のスケジュール（9月14日 木曜日）</h3>
+                    <p>16:00 - 17:30 数学III（微分法の応用）</p>
+                    <p>18:00 - 19:00 英語（リーディング演習）</p>
+                    <p>19:30 - 21:00 自習時間（物理の宿題）</p>
+                </div>
+                <h3>週間スケジュール</h3>
+                <ul class="task-list">
+                    <li><strong>月曜日：</strong> 古文（2時間）、化学（1.5時間）</li>
+                    <li><strong>火曜日：</strong> 数学（2時間）、英語（1.5時間）</li>
+                    <li><strong>水曜日：</strong> 物理（2時間）、現代文（1時間）</li>
+                    <li><strong>木曜日：</strong> 数学（1.5時間）、英語（1時間）、自習（1.5時間）</li>
+                    <li><strong>金曜日：</strong> 世界史（2時間）、数学（1.5時間）</li>
+                    <li><strong>土曜日：</strong> 模擬試験（3時間）、復習（2時間）</li>
+                    <li><strong>日曜日：</strong> 自由研究（2時間）、週間復習（2時間）</li>
+                </ul>
+                <a href="#" class="button">スケジュールを編集</a>
+            </main>
+            <aside class="sidebar">
+                <h3>スケジュール管理のコツ</h3>
+                <p>1. 優先順位をつける：重要度と緊急度を考慮して科目を配置</p>
+                <p>2. 休憩時間を設ける：集中力を維持するため、45分勉強したら10分休憩</p>
+                <p>3. 柔軟性を持たせる：予期せぬ事態に備えて、余裕を持ったスケジュールに</p>
+                <div class="info-box">
+                    <h3>今月の重要日程</h3>
+                    <p><strong>9月20日：</strong> 全国模擬試験</p>
+                    <p><strong>9月25日：</strong> 数学中間テスト</p>
+                </div>
+            </aside>
+        </div>
+    </div>
+    <footer>
+        <p>&copy; 2024 広州学院 学習サポートシステム</p>
+        <p>お問い合わせ: support@kwangju.ac.jp | TEL: 03-9218-8289</p>
+        <p>所在地: 〒100-0001 東京都千代田区千代田1-23-1 光州学院ビル</p>
+        <p>本校: 서울특별시 강남구 신사동 13-425</p>
+    </footer>
+    
+    <script>
+        // 学習進捗チャート
+        var ctx = document.getElementById('progressChart').getContext('2d');
+        var progressChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['数学', '英語', '国語', '理科', '社会'],
+                datasets: [{
+                    label: '学習進捗',
+                    data: [75, 60, 80, 65, 70],
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scale: {
+                    ticks: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        });
+
+        // 週間学習時間チャート
+        var studyTimeCtx = document.getElementById('studyTimeChart').getContext('2d');
+        var studyTimeChart = new Chart(studyTimeCtx, {
+            type: 'bar',
+            data: {
+                labels: ['月', '火', '水', '木', '金', '土', '日'],
+                datasets: [{
+                    label: '学習時間（時間）',
+                    data: [2, 3, 2.5, 3, 4, 5, 3.5],
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
