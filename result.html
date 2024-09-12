@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>詳細模試成績表</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f8f0;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #2e8b57;
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+        }
+        .logo {
+            font-size: 2em;
+            font-weight: bold;
+        }
+        nav {
+            background-color: #3cb371;
+            padding: 10px 0;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+        }
+        nav ul li {
+            margin: 0 15px;
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+        nav ul li a:hover {
+            color: #f0f8ff;
+        }
+        .content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+        h2, h3, h4 {
+            color: #2e8b57;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .chart-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+        .analysis, .recommendation, .historical-data, .peer-comparison, .skill-breakdown {
+            background-color: #e0f0e0;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .recommendation {
+            background-color: #f0e0e0;
+        }
+        .historical-data {
+            background-color: #e0e0f0;
+        }
+        .peer-comparison {
+            background-color: #f0f0e0;
+        }
+        .skill-breakdown {
+            background-color: #e0f0f0;
+        }
+        footer {
+            background-color: #2e8b57;
+            color: white;
+            text-align: center;
+            padding: 15px 0;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">光州学院 日本校</div>
+        <p>未来を育む学びのパートナー</p>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="#home">ホーム</a></li>
+            <li><a href="#courses">講座一覧</a></li>
+            <li><a href="#past-exams">過去問</a></li>
+            <li><a href="#progress">学習進捗</a></li>
+            <li><a href="#">質問フォーラム</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <div class="content">
+            <h2>2024年度第1回全国模試 詳細成績表</h2>
+            <table>
+                <tr>
+                    <th>科目</th>
+                    <th>得点</th>
+                    <th>平均点</th>
+                    <th>標準偏差</th>
+                    <th>偏差値</th>
+                    <th>順位</th>
+                    <th>正答率</th>
+                    <th>難易度別正答率</th>
+                </tr>
+                <tr>
+                    <td>国語</td>
+                    <td>178</td>
+                    <td>150</td>
+                    <td>20.5</td>
+                    <td>65.2</td>
+                    <td>1,250 / 50,000</td>
+                    <td>89%</td>
+                    <td>易:95% 中:88% 難:75%</td>
+                </tr>
+                <tr>
+                    <td>数学</td>
+                    <td>165</td>
+                    <td>140</td>
+                    <td>25.0</td>
+                    <td>62.8</td>
+                    <td>2,500 / 50,000</td>
+                    <td>82.5%</td>
+                    <td>易:92% 中:80% 難:65%</td>
+                </tr>
+                <tr>
+                    <td>英語</td>
+                    <td>182</td>
+                    <td>155</td>
+                    <td>22.0</td>
+                    <td>66.5</td>
+                    <td>950 / 50,000</td>
+                    <td>91%</td>
+                    <td>易:98% 中:90% 難:78%</td>
+                </tr>
+                <tr>
+                    <td>理科</td>
+                    <td>170</td>
+                    <td>145</td>
+                    <td>23.5</td>
+                    <td>64.0</td>
+                    <td>1,800 / 50,000</td>
+                    <td>85%</td>
+                    <td>易:93% 中:85% 難:70%</td>
+                </tr>
+                <tr>
+                    <td>社会</td>
+                    <td>160</td>
+                    <td>135</td>
+                    <td>24.0</td>
+                    <td>61.5</td>
+                    <td>3,200 / 50,000</td>
+                    <td>80%</td>
+                    <td>易:90% 中:78% 難:62%</td>
+                </tr>
+                <tr>
+                    <td><strong>合計</strong></td>
+                    <td><strong>855</strong></td>
+                    <td><strong>725</strong></td>
+                    <td><strong>75.0</strong></td>
+                    <td><strong>64.0</strong></td>
+                    <td><strong>1,500 / 50,000</strong></td>
+                    <td><strong>85.5%</strong></td>
+                    <td><strong>易:93.6% 中:84.2% 難:70%</strong></td>
+                </tr>
+            </table>
+
+            <div class="chart-container">
+                <canvas id="radarChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="barChart"></canvas>
+            </div>
+
+            <div class="skill-breakdown">
+                <h3>スキル別詳細分析</h3>
+                <table>
+                    <tr>
+                        <th>科目</th>
+                        <th>スキル</th>
+                        <th>正答率</th>
+                        <th>平均正答率</th>
+                        <th>偏差値</th>
+                    </tr>
+                    <tr>
+                        <td rowspan="3">国語</td>
+                        <td>現代文読解</td>
+                        <td>92%</td>
+                        <td>80%</td>
+                        <td>68.5</td>
+                    </tr>
+                    <tr>
+                        <td>古文読解</td>
+                        <td>85%</td>
+                        <td>75%</td>
+                        <td>63.2</td>
+                    </tr>
+                    <tr>
+                        <td>漢文読解</td>
+                        <td>78%</td>
+                        <td>70%</td>
+                        <td>59.8</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="4">数学</td>
+                        <td>数と式</td>
+                        <td>88%</td>
+                        <td>75%</td>
+                        <td>65.4</td>
+                    </tr>
+                    <tr>
+                        <td>図形と計量</td>
+                        <td>80%</td>
+                        <td>70%</td>
+                        <td>61.8</td>
+                    </tr>
+                    <tr>
+                        <td>微分・積分</td>
+                        <td>75%</td>
+                        <td>65%</td>
+                        <td>59.5</td>
+                    </tr>
+                    <tr>
+                        <td>確率・統計</td>
+                        <td>70%</td>
+                        <td>60%</td>
+                        <td>57.2</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="4">英語</td>
+                        <td>読解</td>
+                        <td>93%</td>
+                        <td>80%</td>
+                        <td>69.8</td>
+                    </tr>
+                    <tr>
+                        <td>リスニング</td>
+                        <td>90%</td>
+                        <td>75%</td>
+                        <td>67.5</td>
+                    </tr>
+                    <tr>
+                        <td>文法・語法</td>
+                        <td>88%</td>
+                        <td>70%</td>
+                        <td>66.2</td>
+                    </tr>
+                    <tr>
+                        <td>語彙</td>
+                        <td>85%</td>
+                        <td>65%</td>
+                        <td>64.8</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="3">理科</td>
+                        <td>物理</td>
+                        <td>88%</td>
+                        <td>70%</td>
+                        <td>66.5</td>
+                    </tr>
+                    <tr>
+                        <td>化学</td>
+                        <td>85%</td>
+                        <td>65%</td>
+                        <td>65.2</td>
+                    </tr>
+                    <tr>
+                        <td>生物</td>
+                        <td>75%</td>
+                        <td>60%</td>
+                        <td>59.8</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="3">社会</td>
+                        <td>日本史</td>
+                        <td>N</td>
+                        <td>N</td>
+                        <td>N</td>
+                    </tr>
+                    <tr>
+                        <td>地理</td>
+                        <td>82%</td>
+                        <td>70%</td>
+                        <td>62.8</td>
+                    </tr>
+                    <tr>
+                        <td>政治経済</td>
+                        <td>N</td>
+                        <td>N</td>
+                        <td>N</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="analysis">
+                <h3>詳細成績分析</h3>
+                <p>今回の模試結果は全体的に非常に良好で、特に英語と国語で高いパフォーマンスを示しています。以下に各科目の詳細な分析を記します：</p>
+                <h4>国語（178点）：</h4>
+                <ul>
+                    <li>現代文読解が特に優れており、難易度の高い問題でも高い正答率を維持しています。</li>
+                    <li>古文読解も平均を大きく上回っていますが、さらなる向上の余地があります。</li>
+                    <li>漢文読解は他の分野に比べてやや弱く、今後の重点的な学習が必要です。</li>
+                </ul>
+                <h4>数学（165点）：</h4>
+                <ul>
+                    <li>数と式、図形と計量の分野で高い正答率を示しています。</li>
+                    <li>微分・積分は平均以上のパフォーマンスですが、さらなる練習で得点向上が期待できます。</li>
+                    <li>確率・統計は相対的に弱い分野であり、集中的な学習が必要です。</li>
+                </ul>
+                <h4>英語（182点）：</h4>
+                <ul>
+                    <li>読解力が特に優れており、難易度の高い長文問題でも高得点を獲得しています。</li>
+                    <li>リスニング、文法・語法、語彙のすべての分野で安定した高得点を維持しています。</li>
+                    <li>さらなる向上のために、アカデミックな文章や専門的な内容の読解にチャレンジすることをお勧めします。</li>
+                </ul>
+                <h4>理科（170点）：</h4>
+                <ul>
+                    <li>物理と化学で高い正答率を記録していますが、生物での得点が相対的に低めです。</li>
+                    <li>物理では特に力学と電磁気学の分野で優れた成績を収めています。</li>
+                    <li>生物の基礎的な概念の復習が必要かもしれません。特に、細胞生物学と遺伝学に焦点を当てた学習が効果的でしょう。</li>
+                </ul>
+                <h4>社会（160点）：</h4>
+                <ul>
+                    <li>data couldn't be loaded</li>
+                </ul>
+            </div>
+
+            <div class="historical-data">
+                <h3>過去の模試結果との比較</h3>
+                <table>
+                    <tr>
+                        <th>回</th>
+                        <th>実施日</th>
+                        <th>総合得点</th>
+                        <th>偏差値</th>
+                        <th>順位</th>
+                    </tr>
+                    <tr>
+                        <td>今回（第1回）</td>
+                        <td>2024年6月</td>
+                        <td>855</td>
+                        <td>64.0</td>
+                        <td>1,500 / 50,000</td>
+                    </tr>
+                    <tr>
+                        <td>前回（3年生1月）</td>
+                        <td>2024年1月</td>
+                        <td>830</td>
+                        <td>62.5</td>
+                        <td>2,200 / 48,000</td>
+                    </tr>
+                    <tr>
+                        <td>3年生9月</td>
+                        <td>2023年9月</td>
+                        <td>805</td>
+                        <td>61.0</td>
+                        <td>3,500 / 47,000</td>
+                    </tr>
+                    <tr>
+                        <td>3年生6月</td>
+                        <td>2023年6月</td>
+                        <td>780</td>
+                        <td>59.5</td>
+                        <td>5,000 / 46,000</td>
+                    </tr>
+                </table>
+                <p>過去1年間で着実に成績が向上しています。特に直近6ヶ月間での伸びが顕著です。</p>
+            </div>
+
+            <div class="peer-comparison">
+                <h3>志望大学群との比較</h3>
+                <table>
+                    <tr>
+                        <th>大学</th>
+                        <th>学部</th>
+                        <th>偏差値</th>
+                        <th>あなたの偏差値</th>
+                        <th>差</th>
+                    </tr>
+                    <tr>
+                        <td>新潟大学</td>
+                        <td>工学部</td>
+                        <td>67.5</td>
+                        <td>64.0</td>
+                        <td>-3.5</td>
+                    </tr>
+                    <tr>
+                        <td>北海道大学</td>
+                        <td>工学部</td>
+                        <td>65.0</td>
+                        <td>64.0</td>
+                        <td>-1.0</td>
+                    </tr>
+                    <tr>
+                        <td>日本大学</td>
+                        <td>理工学部</td>
+                        <td>62.5</td>
+                        <td>64.0</td>
+                        <td>+1.5</td>
+                    </tr>
+                </table>
+                <p>。現在の学習ペースを維持することで、十分に合格圏内に入ることが期待できます。</p>
+            </div>
+
+            <div class="recommendation">
+                <h3>今後の学習アドバイス</h3>
+                <ol>
+                    <li><strong>英語：</strong> 
+                        <ul>
+                            <li>現状の学習方法を継続しつつ、より難易度の高い長文読解や、academic writingの練習を取り入れることをお勧めします。</li>
+                            <li>TED talksなどの英語音声を活用し、リスニング力をさらに向上させましょう。</li>
+                            <li>語彙力強化のために、分野別の専門用語の学習も効果的です。</li>
+                        </ul>
+                    </li>
+                    <li><strong>数学：</strong>
+                        <ul>
+                            <li>基礎力は十分ですので、今後は応用問題や難問にチャレンジする時間を増やしましょう。</li>
+                            <li>特に、確率・統計分野の問題演習を重点的に行うことをお勧めします。</li>
+                            <li>過去の大学入試問題を解くことで、実践力を養いましょう。</li>
+                        </ul>
+                    </li>
+                    <li><strong>国語：</strong>
+                        <ul>
+                            <li>現代文と古文の安定した得点を維持しつつ、漢文の学習時間を増やすことをお勧めします。</li>
+                            <li>漢文は、句法の基本から丁寧に復習し、読解のコツを掴みましょう。</li>
+                            <li>評論文の読解力をさらに高めるために、新書レベルの本を定期的に読むことも効果的です。</li>
+                        </ul>
+                    </li>
+                    <li><strong>理科：</strong>
+                        <ul>
+                            <li>物理と化学の良好な成績を維持しつつ、生物の基礎的な概念の復習に時間を割きましょう。</li>
+                            <li>生物は、特に細胞の構造や代謝、遺伝のメカニズムなどの重要トピックを重点的に学習することをお勧めします。</li>
+                            <li>実験や観察に関する問題にも注目し、実践的な理解を深めましょう。</li>
+                        </ul>
+                    </li>
+                    <li><strong>社会：</strong>
+                        <ul>
+                            <li>重要な出来事のつながりを意識した学習が効果的です。</li>
+                        </ul>
+                    </li>
+                </ol>
+                <p>全体的に非常に良好な結果ですが、各科目でさらなる改善の余地があります。上記のアドバイスを参考に、バランスの取れた学習計画を立てることをお勧めします。定期的に模試を受験し、進捗を確認することも重要です。また、志望大学の過去問にも積極的に取り組み、入試本番を見据えた準備を進めていきましょう。</p>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <p>&copy; 2024 学習サポートシステム</p>
+        <p>お問い合わせ: support@greenstudy.jp | TEL: 03-1234-5678</p>
+    </footer>
+    
+    <script>
+        // レーダーチャート（前回と同じ）
+        var ctxRadar = document.getElementById('radarChart').getContext('2d');
+        var radarChart = new Chart(ctxRadar, {
+            type: 'radar',
+            data: {
+                labels: ['国語', '数学', '英語', '理科', '社会'],
+                datasets: [{
+                    label: '偏差値',
+                    data: [65.2, 62.8, 66.5, 64.0, 61.5],
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scale: {
+                    ticks: {
+                        beginAtZero: true,
+                        max: 80
+                    }
+                }
+            }
+        });
+
+        // 棒グラフ（前回と同じ）
+        var ctxBar = document.getElementById('barChart').getContext('2d');
+        var barChart = new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: ['国語', '数学', '英語', '理科', '社会'],
+                datasets: [{
+                    label: '得点',
+                    data: [178, 165, 182, 170, 160],
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }, {
+                    label: '平均点',
+                    data: [150, 140, 155, 145, 135],
+                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 200
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

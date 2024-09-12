@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>App on h-takker Blog</title><link>https://takker.cc/categories/app/</link><description>Recent content in App on h-takker Blog</description><generator>Hugo -- gohugo.io</generator><language>ja</language><lastBuildDate>Thu, 16 Mar 2023 18:36:55 +0900</lastBuildDate><atom:link href="https://takker.cc/categories/app/index.xml" rel="self" type="application/rss+xml"/><item><title>Picocryptでファイル暗号化</title><link>https://takker.cc/p/how-to-use-picocrypt/</link><pubDate>Thu, 16 Mar 2023 18:36:55 +0900</pubDate><guid>https://takker.cc/p/how-to-use-picocrypt/</guid><description>&lt;p>秘密の写真やキーファイルなど、細かいファイル単位の「他人に見られたくないファイルをパスワードで暗号化して保存したい」みたいなことがあると思います。&lt;/p>
+&lt;p>Windows Home版や外付けHDD, USBのデータは暗号化なし状態で保存されていることがほとんどで、ドライブへの物理的アクセスが可能であればすぐに秘密のファイルが見られてしまいます。また、クラウドストレージでもエンドツーエンド暗号化(E2EE)が実装されているサービスは少なく(有名どころでiCloudの&lt;a class="link" href="https://support.apple.com/ja-jp/HT212520" target="_blank" rel="noopener"
+>高度なデータ保護&lt;/a>)、サービスプロバイダがファイルを閲覧することが事実上可能になっています。&lt;/p>
+&lt;p>全てのファイルとはいかなくとも、機密ファイルだけはパスワードで暗号化して自分だけがアクセスできるようにしたいという需要が生まれます。その最初のやり方としてまず&lt;strong>パスワード付き圧縮ファイル&lt;/strong>にすることがあげられます。7-Zipなどのソフトウェアを使えば、圧縮するついでに安全な暗号化をすることでセキュリティを確保することができます。&lt;/p>
+&lt;h2 id="picocrypt">Picocrypt
+&lt;/h2>&lt;p>そして、別のソフトウェアとしてこの記事で紹介するPicocryptは、7-ZipやVeraCryptなどと同じくファイル暗号化機能を提供するものです。7-Zipの機能を使えば圧縮のおまけ機能として暗号化ができますが、これは&lt;strong>暗号化専用ソフト&lt;/strong>になっています。&lt;/p>
+&lt;h2 id="メリットと使い道">メリットと使い道
+&lt;/h2>&lt;p>メリットは、以下の通りです。&lt;/p>
+&lt;ul>
+&lt;li>完全なオープンソース&lt;/li>
+&lt;li>セットアップ・暗号化が簡単&lt;/li>
+&lt;li>ファイルサイズが極小(3MB)&lt;/li>
+&lt;li>セキュリティ第一の設計&lt;/li>
+&lt;/ul>
+&lt;p>VeraCryptとは違い、特別な領域のセットアップなどが不要で、ファイルを&lt;strong>ドラッグ&amp;amp;ドロップで簡単に暗号化&lt;/strong>できる設計になっているので、用途としては単体だったり小さめのファイルを暗号化するのに向いています。&lt;/p>
+&lt;ul>
+&lt;li>フルディスクを暗号化したいならBitLocker(FileVault)またはVeraCrypt&lt;/li>
+&lt;li>クラウドでファイルシステムのように使いたい場合はCryptomator&lt;/li>
+&lt;li>モバイルで使う予定があるなら有料のCryptomator&lt;/li>
+&lt;li>小さいファイルや単体で暗号化したい場合はPicoCrypt&lt;/li>
+&lt;li>クロスプラットフォームで簡単に使えるGUIが欲しいならPicoCrypt&lt;/li>
+&lt;li>セキュリティを重視する場合はPicoCrypt&lt;/li>
+&lt;/ul>
+&lt;p>という感じですね。「2段階認証の回復キーを暗号化してUSBに保存したい」みたいな時もVeraCryptで別途領域を作るよりはPicoCryptで作った方が楽かもしれません。生成されるのは原則一つのファイルなので、それを&lt;strong>コピーするだけでバックアップ&lt;/strong>も取れます。&lt;/p>
+&lt;h2 id="導入方法">導入方法
+&lt;/h2>&lt;p>&lt;a class="link" href="https://github.com/HACKERALERT/Picocrypt/releases" target="_blank" rel="noopener"
+>PicoCryptのGithub Releasesページ&lt;/a>にアクセスします。お使いのOSにあった最新バージョンのものをダウンロードしてください。Windowsなら&lt;code>.exe&lt;/code>、MacOSなら&lt;code>.app.zip&lt;/code>のものをダウンロードします。&lt;/p>
+&lt;figure>&lt;img src="./pc_assets.png" width="400">
+&lt;/figure>
+&lt;h2 id="基本的な使い方">基本的な使い方
+&lt;/h2>&lt;h3 id="暗号化">暗号化
+&lt;/h3>&lt;p>Picocryptを起動すると、このような画面になっていると思います。&lt;/p>
+&lt;figure>&lt;img src="./pc_screen.png" width="400">
+&lt;/figure>
+&lt;p>暗号化したいファイルをウィンドウ内にドラッグ&amp;amp;ドロップします。&lt;/p>
+&lt;p>するとパスワードが入力できるようになるので、自分が忘れない強固なパスワードを入力してください。また「Create」ボタンから新しいパスワードをランダムに生成することもできます。&lt;/p>
+&lt;p>一番下は保存先です。デフォルトでは同じパスに &lt;code>ファイル名.元拡張子.pcv&lt;/code> の形式のファイルとして保存されます。「Change」ボタンから指定した保存先を選択することができます。&lt;/p>
+&lt;p>最後に「Encrypt」ボタンをクリックするとファイルの暗号化が開始されます。ローエンドのノートPCで1GBの複数の動画ファイルを暗号化してみましたが、標準の設定では20秒程度で完了しました。&lt;/p>
+&lt;figure>&lt;img src="./pc_dnd.gif" width="400">
+&lt;/figure>
+&lt;h3 id="復号pcvファイルを元に戻す">復号(pcvファイルを元に戻す)
+&lt;/h3>&lt;p>同じようにpcvファイルをウィンドウ内にドラッグ&amp;amp;ドロップして、パスワード欄に設定したパスワードを入力して「Decrypt」ボタンを押せば暗号化を解除することができます。&lt;/p>
+&lt;h2 id="高度な使い方">高度な使い方
+&lt;/h2>&lt;p>ここからは他の暗号化ソフトではできないセキュリティを強化するPicocryptの使い方を紹介します。&lt;/p>
+&lt;h3 id="キーファイル">キーファイル
+&lt;/h3>&lt;p>パスワードだけではなく、&lt;strong>自分だけが持っているファイル&lt;/strong>(キーファイル)を使って暗号化することができます。
+自分だけが持っている画像などのファイルでも、新たに生成することもできます。
+チームで使う場合は、それぞれ1人ずつキーファイルを所持し、全員がいないと開けられないという構成にすることもできます。&lt;/p>
+&lt;p>Keyfilesの「Edit」ボタンを押して、出てきたダイアログにキーファイルをドラッグ&amp;amp;ドロップします。「Create」でランダムなキーファイルを作れます。&lt;/p>
+&lt;h3 id="paranoid-mode">Paranoid mode
+&lt;/h3>&lt;p>複数の暗号化方式を使用するなどして最高レベルの暗号化をすることができます。ただし、公式でも言われているように、処理速度が遅くなるので、政府機関や脅威にさらされている内部告発者でない限り必要性はあまりないと思われます。&lt;/p>
+&lt;h3 id="ファイル圧縮">ファイル圧縮
+&lt;/h3>&lt;p>「Compress files」のチェックを入れればzipで圧縮してくれます。&lt;/p>
+&lt;h3 id="reed-solomon">Reed-Solomon
+&lt;/h3>&lt;p>&lt;a class="link" href="https://ja.wikipedia.org/wiki/%E3%83%AA%E3%83%BC%E3%83%89%E3%83%BB%E3%82%BD%E3%83%AD%E3%83%A2%E3%83%B3%E7%AC%A6%E5%8F%B7" target="_blank" rel="noopener"
+>リード・ソロモン符号&lt;/a>を使用して最大3%ファイルが破損しても誤り修正をすることができる設定です。暗号化と復号化に著しく時間がかかるので、クラウドや外部HDDに長期保存するのに向いています。&lt;/p>
+&lt;h3 id="delete-files">Delete files
+&lt;/h3>&lt;p>復号化する際ファイルの改竄が検知された場合に自動的に削除するオプションです。&lt;/p>
+&lt;h3 id="ファイルの分割">ファイルの分割
+&lt;/h3>&lt;p>「Split into chunks」オプションはファイルを指定した単位で分割することができます。&lt;/p>
+&lt;h2 id="まとめ">まとめ
+&lt;/h2>&lt;p>以上がPicocryptの使い方になります。言語が英語のみの対応になっているので抵抗感がありますが、他のソフトよりも簡単にファイルを暗号化できるので、PC1台に1つは導入しておくと良いのではないでしょうか。&lt;/p></description></item></channel></rss>
