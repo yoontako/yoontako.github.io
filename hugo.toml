@@ -1,6 +1,8 @@
 title = "Teymo Blog"
 baseURL = "https://yoontako.github.io/"
 
+hasCJKLanguage = true
+
 [module]
   [[module.imports]]
     # Option 1 (recommended): adding the theme as a Hugo module
