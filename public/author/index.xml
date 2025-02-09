@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Author on Teymo Blog</title>
+    <link>https://yoontako.github.io/author/</link>
+    <description>Recent content in Author on Teymo Blog</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <atom:link href="https://yoontako.github.io/author/index.xml" rel="self" type="application/rss+xml" />
+  </channel>
+</rss>
